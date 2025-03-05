@@ -4,7 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "bx.backend": "StartDebugging"
+        "bx.backend": "StartDebugging",
+        "bx.frontend": "StartDebugging"
       }
     }
   }

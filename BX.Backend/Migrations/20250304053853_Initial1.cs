@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BX.Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initial1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,7 +30,8 @@ namespace BX.Backend.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -63,6 +64,51 @@ namespace BX.Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectStates", x => x.ProjectStateId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Properties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ConstructionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Province = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Canton = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ConstructionSize = table.Column<double>(type: "float", nullable: false),
+                    LandSize = table.Column<double>(type: "float", nullable: false),
+                    Bedrooms = table.Column<int>(type: "int", nullable: false),
+                    Bathrooms = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Floors = table.Column<int>(type: "int", nullable: false),
+                    HasGarage = table.Column<bool>(type: "bit", nullable: false),
+                    GarageCapacity = table.Column<int>(type: "int", nullable: false),
+                    IsCondominium = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Properties", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Suppliers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Contact = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suppliers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -172,68 +218,43 @@ namespace BX.Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserEmail",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserEmail", x => new { x.UserId, x.Email });
-                    table.ForeignKey(
-                        name: "FK_UserEmail_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserPhones",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserPhones", x => new { x.UserId, x.PhoneNumber });
-                    table.ForeignKey(
-                        name: "FK_UserPhones_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
-                    ProjectID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    ProjectOwnerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProjectStateId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ConstructionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Province = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Canton = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ConstructionSize = table.Column<double>(type: "float", nullable: false),
+                    LandSize = table.Column<double>(type: "float", nullable: false),
+                    Bedrooms = table.Column<int>(type: "int", nullable: false),
+                    Bathrooms = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Floors = table.Column<int>(type: "int", nullable: false),
+                    HasGarage = table.Column<bool>(type: "bit", nullable: false),
+                    GarageCapacity = table.Column<int>(type: "int", nullable: false),
+                    IsCondominium = table.Column<bool>(type: "bit", nullable: false),
+                    ProjectStateId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.ProjectID);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_AspNetUsers_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_Projects_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Projects_AspNetUsers_ProjectOwnerId",
-                        column: x => x.ProjectOwnerId,
+                        name: "FK_Projects_AspNetUsers_ClientId",
+                        column: x => x.ClientId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -241,8 +262,77 @@ namespace BX.Backend.Migrations
                         name: "FK_Projects_ProjectStates_ProjectStateId",
                         column: x => x.ProjectStateId,
                         principalTable: "ProjectStates",
-                        principalColumn: "ProjectStateId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ProjectStateId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupplierOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SupplierId = table.Column<int>(type: "int", nullable: false),
+                    Material = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProveedorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupplierOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupplierOrders_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupplierPayments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SupplierId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupplierPayments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupplierPayments_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tasks_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -285,19 +375,34 @@ namespace BX.Backend.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_CustomerId",
+                name: "IX_Projects_AdminId",
                 table: "Projects",
-                column: "CustomerId");
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_ProjectOwnerId",
+                name: "IX_Projects_ClientId",
                 table: "Projects",
-                column: "ProjectOwnerId");
+                column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ProjectStateId",
                 table: "Projects",
                 column: "ProjectStateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupplierOrders_SupplierId",
+                table: "SupplierOrders",
+                column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupplierPayments_SupplierId",
+                table: "SupplierPayments",
+                column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_ProjectId",
+                table: "Tasks",
+                column: "ProjectId");
         }
 
         /// <inheritdoc />
@@ -319,22 +424,31 @@ namespace BX.Backend.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "Properties");
 
             migrationBuilder.DropTable(
-                name: "UserEmail");
+                name: "SupplierOrders");
 
             migrationBuilder.DropTable(
-                name: "UserPhones");
+                name: "SupplierPayments");
+
+            migrationBuilder.DropTable(
+                name: "Tasks");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "ProjectStates");
+                name: "Suppliers");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ProjectStates");
         }
     }
 }

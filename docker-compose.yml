@@ -1,8 +1,7 @@
 services:
   bx.backend:
     image: ${DOCKER_REGISTRY-}bxbackend
-    # environment: 
-    #   - BuildXpertDB="Data Source=SQL_Server,1433;Database=BuildExpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;"
+    container_name: Backend
     build:
       context: .
       dockerfile: BX.Backend/Dockerfile
@@ -23,6 +22,21 @@ services:
       - "1433:1433"
     networks:
     - app-containers-network
+
+  bx.frontend:
+    image: ${DOCKER_REGISTRY-}bxfrontend
+    container_name: Frontend
+    build:
+      context: .
+      dockerfile: BX.Frontend/Dockerfile
+    depends_on:
+    - SQLServerDB
+    ports:
+     - "8084:8084"
+     - "8085:8085" 
+    networks:
+    - app-containers-network
+    
 
 networks:
   app-containers-network:

@@ -1,0 +1,315 @@
+﻿@page "/supplier-details/{id:int}"
+@using BX.Models
+@using BX.Frontend.Services
+@inject SupplierService supplierService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<style>
+    .supplier-container {
+        max-width: 2000px;
+        margin: auto;
+        padding: px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+
+    .btn-action {
+        margin: 5px;
+    }
+
+    .tab-content {
+        padding: 100px;
+    }
+
+
+</style>
+
+<div class="container mt-5">
+    <div class="supplier-container">
+        <h2>Detalles del supplier</h2>
+
+        @if (supplier == null)
+        {
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando información...</p>
+            </div>
+        }
+        else
+        {
+            <div>
+                <p><strong>📌 Nombre:</strong> @supplier.Name</p>
+                <p><strong>🏗 Servicio:</strong> @supplier.ServiceType</p>
+                <p><strong>📞 Contacto:</strong> @supplier.Contact</p>
+                <p><strong>📍 Dirección:</strong> @supplier.Address</p>
+                <p><strong>Estado:</strong> <span class="badge @(supplier.Status == "Activo" ? "bg-success" : "bg-secondary")">@supplier.Status</span></p>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn btn-primary btn-action" @onclick="ShowEdit">Editar</button>
+                <button class="btn btn-danger btn-action" @onclick="Deletesupplier">Eliminar</button>
+            </div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mt-4">
+                <li class="nav-item">
+                    <button class="nav-link @(activeTab == "pagos" ? "active" : "")" @onclick="@(() => ChangeTab("pagos"))">Pagos</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link @(activeTab == "pedidos" ? "active" : "")" @onclick="@(() => ChangeTab("pedidos"))">Pedidos y Reservas</button>
+                </li>
+            </ul>
+
+            <!-- Contenido de las pestañas -->
+            <div class="tab-content">
+                @if (activeTab == "pagos")
+                {
+                    <div>
+                        <h5>Registrar Pago</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Monto</label>
+                                <input type="number" class="form-control" @bind="newPayment.Price" />
+                                <span class="text-danger" if="@showErrorPago && newPayment.Monto <= 0">El monto es obligatorio y debe ser mayor a 0.</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Fecha</label>
+                                <input type="date" class="form-control" @bind="newPayment.Date" />
+                                <span class="text-danger" if="@showErrorPago && newPayment.Fecha == default">La fecha es obligatoria.</span>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-success mt-4" @onclick="RegistrarPago">Guardar Pago</button>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4">Historial de Pagos</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Monto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pago in historialPagos)
+                                {
+                                    <tr>
+                                        <td>@pago.Date.ToShortDateString()</td>
+                                        <td>@pago.Price.ToString("C")</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarPago(pago.Id)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (activeTab == "pedidos")
+                {
+                    <div>
+                        <h5>Crear Pedido</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Material</label>
+                                <input type="text" class="form-control" @bind="newOrder.Material" />
+                                <span class="text-danger" if="@showErrorPedido && string.IsNullOrWhiteSpace(newOrder.Material)">El material es obligatorio.</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cantidad</label>
+                                <input type="number" class="form-control" @bind="newOrder.Quantity" />
+                                <span class="text-danger" if="@showErrorPedido && newOrder.Cantidad <= 0">La cantidad debe ser mayor a 0.</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Descripción</label>
+                                <input type="text" class="form-control" @bind="newOrder.Description" />
+                                <span class="text-danger" if="@showErrorPedido && string.IsNullOrWhiteSpace(newOrder.Descripcion)">La descripción es obligatoria.</span>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary mt-4" @onclick="RegistrarPedido">Guardar Pedido</button>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4">Historial de Pedidos</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Cantidad</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pedido in historialPedidos)
+                                {
+                                    <tr>
+                                        <td>@pedido.Material</td>
+                                        <td>@pedido.Quantity</td>
+                                        <td>@pedido.Description</td>
+                                        <td>@pedido.OrderDate.ToShortDateString()</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarPedido(pedido.Id)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+
+<!-- MODAL PARA EDITAR supplier -->
+@if (showEditModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar supplier</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" @bind="editsupplier.Name">
+                        <span class="text-danger" if="@showEditError && string.IsNullOrWhiteSpace(editsupplier.Nombre)">El nombre es obligatorio.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoServicio" class="form-label">Tipo de Servicio</label>
+                        <input type="text" class="form-control" id="tipoServicio" @bind="editsupplier.ServiceType">
+                        <span class="text-danger" if="@showEditError && string.IsNullOrWhiteSpace(editsupplier.TipoServicio)">El tipo de servicio es obligatorio.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contacto" class="form-label">Contacto</label>
+                        <input type="text" class="form-control" id="contacto" @bind="editsupplier.Contact">
+                        <span class="text-danger" if="@showEditError && string.IsNullOrWhiteSpace(editsupplier.Contacto)">El contacto es obligatorio.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" @bind="editsupplier.Address">
+                        <span class="text-danger" if="@showEditError && string.IsNullOrWhiteSpace(editsupplier.Direccion)">La dirección es obligatoria.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-control" id="estado" @bind="editsupplier.Status">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseEditModal">Cancelar</button>
+                    <button class="btn btn-primary" @onclick="GuardarCambios" disabled="@showEditError">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Supplier supplier;
+    private List<SupplierPayment> historialPagos = new();
+    private List<SupplierOrder> historialPedidos = new();
+    private SupplierPayment newPayment = new();
+    private SupplierOrder newOrder = new();
+    private string activeTab = "pagos";
+    private Supplier editsupplier = new();
+    private bool showEditModal = false;
+    private bool showEditError => string.IsNullOrWhiteSpace(editsupplier.Name) ||
+                              string.IsNullOrWhiteSpace(editsupplier.ServiceType) ||
+                              string.IsNullOrWhiteSpace(editsupplier.Contact) ||
+                              string.IsNullOrWhiteSpace(editsupplier.Address);
+
+    private bool showErrorPago => newPayment.Price <= 0 || newPayment.Date == default;
+    private bool showErrorPedido => string.IsNullOrWhiteSpace(newOrder.Material) || newOrder.Quantity <= 0 || string.IsNullOrWhiteSpace(newOrder.Description);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        supplier = await supplierService.GetSupplierByIdAsync(Id);
+        historialPagos = await supplierService.GetPagosBysupplierIdAsync(Id);
+        historialPedidos = await supplierService.GetPedidosBysupplierIdAsync(Id);
+    }
+
+    private void ChangeTab(string tab) => activeTab = tab;
+
+    private void ShowEdit()
+    {
+        editsupplier = new Supplier
+            {
+                Id = supplier.Id,
+                Name = supplier.Name,
+                ServiceType = supplier.ServiceType,
+                Contact = supplier.Contact,
+                Address = supplier.Address,
+                Status = supplier.Status
+            };
+        showEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        showEditModal = false;
+    }
+
+    private async Task GuardarCambios()
+    {
+        if (showEditError) return;
+
+        await supplierService.UpdatesupplierAsync(editsupplier);
+        supplier = await supplierService.GetSupplierByIdAsync(Id);
+        showEditModal = false;
+    }
+
+    private async Task RegistrarPago()
+    {
+        newPayment.SupplierId = Id;
+        newPayment.Date = newPayment.Date == default ? DateTime.Now : newPayment.Date;
+        await supplierService.AddPagoAsync(newPayment);
+        historialPagos = await supplierService.GetPagosBysupplierIdAsync(Id);
+        newPayment = new();
+    }
+
+    private async Task RegistrarPedido()
+    {
+        newOrder.SupplierId = Id;
+        newOrder.OrderDate = DateTime.Now;
+        await supplierService.AddSupplierOrderAsync(newOrder);
+        historialPedidos = await supplierService.GetPedidosBysupplierIdAsync(Id);
+        newOrder = new();
+    }
+
+    private async Task EliminarPago(int id)
+    {
+        await supplierService.DeleteSupplierPaymentsAsync(id);
+        historialPagos = await supplierService.GetPagosBysupplierIdAsync(Id);
+    }
+
+    private async Task EliminarPedido(int id)
+    {
+        await supplierService.DeleteSupplierOrdersAsync(id);
+        historialPedidos = await supplierService.GetPedidosBysupplierIdAsync(Id);
+    }
+
+    private async Task Deletesupplier()
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "¿Eliminar este supplier?"))
+        {
+            await supplierService.DeletesupplierAsync(supplier.Id);
+            Navigation.NavigateTo("/supplieres");
+        }
+    }
+}

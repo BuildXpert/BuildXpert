@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace BX.Models
 {
-    public class BuildXpertContext : IdentityDbContext<User>, IBuildXpertContext
+    public class BuildXpertContext : IdentityDbContext<ApplicationUser>, IBuildXpertContext
     {
-        public DbSet<User> Users { get; set; }
-        //public DbSet<UserEmail> UserEmails { get; set; }
-        //public DbSet<UserGoogleID> UserGoogleIDs { get; set; }
-        public DbSet<UserPhone> UserPhones { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectState> ProjectStates { get; set; }
-        //public DbSet<test> test { get; set; }
+        public DbSet<ProjectTask> Tasks { get; set; }
+        public DbSet<Property> Properties { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<SupplierPayment> SupplierPayments { get; set; }
+        public DbSet<SupplierOrder> SupplierOrders { get; set; }
 
         public BuildXpertContext() : base()
         {
@@ -30,44 +30,48 @@ namespace BX.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Configure composite primary key for UserEmail
-            modelBuilder.Entity<UserEmail>()
-                .HasKey(ue => new { ue.UserId, ue.Email });
-
-            // Configure composite primary key for UserPhone
-            modelBuilder.Entity<UserPhone>()
-                .HasKey(up => new { up.UserId, up.PhoneNumber });
-
-            // Configure one-to-one relationship for UserGoogleID
-            //modelBuilder.Entity<User>()
-            //    .HasOne(u => u.UserGoogleID)
-            //    .WithOne(ug => ug.User)
-            //    .HasForeignKey<UserGoogleID>(ug => ug.UserId);
-
-            // Configure foreign key relationships for Project
+            // 🔹 Configurar relación entre Project y Cliente (Usuario)
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.ProjectOwner)
-                .WithMany()
-                .HasForeignKey(p => p.ProjectOwnerId)
-                .OnDelete(DeleteBehavior.Restrict); // No cascade delete
+                .HasOne(p => p.Client)
+                .WithMany(p => p.Projects)
+                .HasForeignKey(p => p.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // 🔹 Configurar relación entre Project y Administrador (Usuario)
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.Customer)
-                .WithMany()
-                .HasForeignKey(p => p.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict); // No cascade delete
+                .HasOne(p => p.Admin)
+                .WithMany(p => p.ProjectsAsAdmin)
+                .HasForeignKey(p => p.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // 🔹 Configurar precisión para `decimal`
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.ProjectState)
-                .WithMany(ps => ps.Projects)
-                .HasForeignKey(p => p.ProjectStateId)
-                .OnDelete(DeleteBehavior.Restrict); // Cascade delete
-        }
+                .Property(p => p.Price)
+                .HasColumnType("decimal(18, 2)");
 
-        public async Task<bool> CanConnectAsync()
-        {
-            return await Database.CanConnectAsync();
+            modelBuilder.Entity<Property>()
+                .Property(p => p.Price)
+                .HasColumnType("decimal(18, 2)");
+
+            // 🔹 Configurar relación entre `PedidoProveedor` y `Proveedor`
+            modelBuilder.Entity<SupplierOrder>()
+                .HasOne(p => p.Supplier)
+                .WithMany(p => p.Orders)
+                .HasForeignKey(p => p.SupplierId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 🔹 Asegurar que `Material` sea tratado como un simple string y no como una relación
+            modelBuilder.Entity<SupplierOrder>()
+                .Property(p => p.Material)
+                .HasColumnType("nvarchar(255)")
+                .IsRequired();
+
+            // 🔹 Configurar relación entre `PagoProveedor` y `Proveedor`
+            modelBuilder.Entity<SupplierPayment>()
+                .HasOne(p => p.Supplier)
+                .WithMany(p => p.Payments)
+                .HasForeignKey(p => p.SupplierId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
