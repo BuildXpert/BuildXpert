@@ -6,8 +6,8 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8084
 EXPOSE 8085
-RUN sleep 10
-RUN echo "This containers is holding for 10s"
+#RUN sleep 10
+#RUN echo "This containers is holding for 10s"
 ENV BuildXpertDB="Data Source=SQL_Server,1433;Database=BuildExpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;"
 
 # This stage is used to build the service project

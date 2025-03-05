@@ -31,6 +31,7 @@ services:
       dockerfile: BX.Frontend/Dockerfile
     depends_on:
     - SQLServerDB
+    - bx.backend
     ports:
      - "8084:8084"
      - "8085:8085" 

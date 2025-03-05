@@ -39,7 +39,7 @@ if (connectionString.IsNullOrEmpty())
 
 builder.Services.AddDbContext<BuildXpertContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseSqlServer(connectionString, slqOptionsAction => slqOptionsAction.EnableRetryOnFailure());
 });
 #endregion
 
