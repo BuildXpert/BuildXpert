@@ -4,11 +4,12 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8084
-EXPOSE 8085
-#RUN sleep 10
+EXPOSE 8080
+EXPOSE 8081
+#RUN sleep 20
 #RUN echo "This containers is holding for 10s"
-ENV BuildXpertDB="Data Source=SQL_Server,1433;Database=BuildExpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;"
+#ENV BuildXpertDB="Data Source=SQL_Server,1433;Database=BuildExpertDB;Integrated Security=false;User Id=sa1;Password=password12345!;TrustServerCertificate=true;"
+#FROM jwilder/dockerize
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build

@@ -1,44 +1,59 @@
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=password12345!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - app-containers-network
+    restart: unless-stopped
+
   bx.backend:
     image: ${DOCKER_REGISTRY-}bxbackend
     container_name: Backend
+    environment:
+    # - BuildXpertDB=Data Source=sqlserver,1433;Database=BuildXpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;
+      - ConnectionStrings__DefaultConnection=Data Source=sqlserver,1433;Database=BuildXpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;
     build:
       context: .
       dockerfile: BX.Backend/Dockerfile
     depends_on:
-      - SQLServerDB
+      - sqlserver
     ports:
     - "8080:8080"
     - "8081:8081"
-    networks:
-    - app-containers-network
-  SQLServerDB:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: SQL_Server
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=password12345!
-    ports:
-      - "1433:1433"
     networks:
     - app-containers-network
 
   bx.frontend:
     image: ${DOCKER_REGISTRY-}bxfrontend
     container_name: Frontend
+    environment:
+    - ConnectionStrings__DefaultConnection=Data Source=sqlserver,1433;Database=BuildXpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;
     build:
       context: .
       dockerfile: BX.Frontend/Dockerfile
     depends_on:
-    - SQLServerDB
     - bx.backend
     ports:
-     - "8084:8084"
-     - "8085:8085" 
+     - "8084:8080"
+     - "8085:8081" 
     networks:
     - app-containers-network
-    
+    #command: ["dockerize", "wait", "tcp://SQL_Server:1433","tcp://bx.backend:8080", "-timeout", "60s", "dotnet", "BX.Frontend.dll"]
+
+volumes:
+  sqlserver-data:    
 
 networks:
   app-containers-network:
     driver: bridge  
+
+
+
