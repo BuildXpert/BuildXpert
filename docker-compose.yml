@@ -20,6 +20,8 @@ services:
     environment:
     # - BuildXpertDB=Data Source=sqlserver,1433;Database=BuildXpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;
       - ConnectionStrings__DefaultConnection=Data Source=sqlserver,1433;Database=BuildXpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https_cert.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=p1o2i3u4y5t6
     build:
       context: .
       dockerfile: BX.Backend/Dockerfile
@@ -28,6 +30,8 @@ services:
     ports:
     - "8080:8080"
     - "8081:8081"
+    volumes:
+      - ./https_cert.pfx:/https_cert.pfx
     networks:
     - app-containers-network
 
@@ -36,6 +40,8 @@ services:
     container_name: Frontend
     environment:
     - ConnectionStrings__DefaultConnection=Data Source=sqlserver,1433;Database=BuildXpertDB;Integrated Security=false;User Id=sa;Password=password12345!;TrustServerCertificate=true;
+    - ASPNETCORE_Kestrel__Certificates__Default__Path=/https_cert.pfx
+    - ASPNETCORE_Kestrel__Certificates__Default__Password=p1o2i3u4y5t6
     build:
       context: .
       dockerfile: BX.Frontend/Dockerfile
@@ -44,6 +50,8 @@ services:
     ports:
      - "8084:8080"
      - "8085:8081" 
+    volumes:
+    - ./https_cert.pfx:/https_cert.pfx
     networks:
     - app-containers-network
     #command: ["dockerize", "wait", "tcp://SQL_Server:1433","tcp://bx.backend:8080", "-timeout", "60s", "dotnet", "BX.Frontend.dll"]

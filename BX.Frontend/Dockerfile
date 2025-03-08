@@ -6,8 +6,6 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
-#RUN sleep 20
-#RUN echo "This containers is holding for 10s"
 #ENV BuildXpertDB="Data Source=SQL_Server,1433;Database=BuildExpertDB;Integrated Security=false;User Id=sa1;Password=password12345!;TrustServerCertificate=true;"
 #FROM jwilder/dockerize
 
@@ -34,4 +32,6 @@ RUN dotnet publish "./BX.Frontend.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/https_cert.pfx"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="p1o2i3u4y5t6"
 ENTRYPOINT ["dotnet", "BX.Frontend.dll"]
