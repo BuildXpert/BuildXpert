@@ -32,4 +32,6 @@ RUN dotnet publish "./BX.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/https_cert.pfx"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="p1o2i3u4y5t6"
 ENTRYPOINT ["dotnet", "BX.Backend.dll"]
