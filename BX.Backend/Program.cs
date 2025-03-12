@@ -13,11 +13,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 #region SQL Server Connection
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//if (connectionString.IsNullOrEmpty())
-//{
-//    connectionString = builder.Configuration.GetConnectionString("userSecretDB"); //Run this string as your secret in the local terminal
-//}
+//Run this string as your secret in the local terminal
+//dotnet user-secrets set "ConnectionStrings:userSecretDB" "<connection-string>"
+var connectionString = builder.Configuration.GetConnectionString("userSecretDB");
+if (connectionString.IsNullOrEmpty())
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); 
+}
 
 builder.Services.AddDbContext<BuildXpertContext>(options =>
 {

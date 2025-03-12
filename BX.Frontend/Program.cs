@@ -29,13 +29,13 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 
 
 #region SQL Server Connection
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//if (connectionString.IsNullOrEmpty())
-//{
-//    connectionString = builder.Configuration.GetConnectionString("userSecretDB"); //Run this string as your secret in the local terminal
-//}
-
-//System.Threading.Thread.Sleep(50);
+//Run this string as your secret in the local terminal
+//dotnet user-secrets set "ConnectionStrings:userSecretDB" "<connection-string>"
+var connectionString = builder.Configuration.GetConnectionString("userSecretDB");
+if (connectionString.IsNullOrEmpty())
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
 
 builder.Services.AddDbContext<BuildXpertContext>(options =>
 {
