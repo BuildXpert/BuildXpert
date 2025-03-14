@@ -135,6 +135,75 @@ namespace BX.Frontend.Services
         }
 
 
+        public async Task<List<Project>> GetFilteredProjectsAsync(
+        string searchText = "",
+        string constructionType = "",
+        string status = "",
+        string province = "",
+        string canton = "",
+        int? minPrice = null,
+        int? maxPrice = null,
+        int? bedrooms = null,
+        int? bathrooms = null)
+        {
+            var query = _context.Projects.AsQueryable();
+
+            // Filtro por texto (Nombre o Descripción)
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                query = query.Where(p => p.Name.Contains(searchText) || p.Description.Contains(searchText));
+            }
+
+            // Filtro por Tipo de Construcción
+            if (!string.IsNullOrEmpty(constructionType))
+            {
+                query = query.Where(p => p.ConstructionType == constructionType);
+            }
+
+            // Filtro por Estado del Proyecto
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(p => p.Status == status);
+            }
+
+            // Filtro por Provincia
+            if (!string.IsNullOrEmpty(province))
+            {
+                query = query.Where(p => p.Province == province);
+            }
+
+            // Filtro por Cantón
+            if (!string.IsNullOrEmpty(canton))
+            {
+                query = query.Where(p => p.Canton == canton);
+            }
+
+            // Filtro por Rango de Precio
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            // Filtro por Número de Habitaciones
+            if (bedrooms.HasValue)
+            {
+                query = query.Where(p => p.Bedrooms == bedrooms.Value);
+            }
+
+            // Filtro por Número de Baños
+            if (bathrooms.HasValue)
+            {
+                query = query.Where(p => p.Bathrooms == bathrooms.Value);
+            }
+
+            return await query.ToListAsync();
+        }
+
 
         public async Task UpdateTaskAsync(ProjectTask task)
         {

@@ -1,0 +1,180 @@
+﻿@page "/Inventario"
+@inject NavigationManager Navigation
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <div class="card-body">
+            <h3 class="card-title text-primary text-center">📦 Inventario de Productos</h3>
+
+            <!-- Barra de búsqueda y botón de agregar -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <input type="text" class="form-control w-25" placeholder="🔍 Buscar producto..." />
+                <button class="btn btn-success" @onclick="AbrirModalAgregar"><i class="bi bi-plus-lg"></i> Agregar Producto</button>
+            </div>
+
+            <!-- Tabla de productos -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center shadow-sm">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Objeto</th>
+                            <th>Precio</th>
+                            <th>Fecha de Ingreso</th>
+                            <th>Fecha de Salida</th>
+                            <th>Proveedor</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var producto in productos)
+                        {
+                            <tr>
+                                <td>@producto.Id</td>
+                                <td>@producto.Nombre</td>
+                                <td>@producto.Precio.ToString("C")</td>
+                                <td>@producto.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                                <td>@(producto.FechaSalida.HasValue ? producto.FechaSalida.Value.ToString("dd/MM/yyyy") : "No especificado")</td>
+                                <td>@producto.Proveedor</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-2" @onclick="AbrirModalEditar"><i class="bi bi-pencil"></i> Editar</button>
+                                    <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Botón para volver -->
+            <button class="btn btn-secondary mt-3" @onclick="Volver"><i class="bi bi-arrow-left"></i> Volver</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Agregar Producto -->
+@if (mostrarModalAgregar)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Producto</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModalAgregar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" placeholder="Ej: Cemento">
+                    </div>
+                    <div class="mb-3">
+                        <label>Precio</label>
+                        <input type="number" class="form-control" placeholder="Ej: 2500">
+                    </div>
+                    <div class="mb-3">
+                        <label>Fecha de Ingreso</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>Proveedor</label>
+                        <input type="text" class="form-control" placeholder="Ej: Materiales del Valle">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CerrarModalAgregar">Cancelar</button>
+                    <button class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+<!-- Modal para Editar Producto -->
+@if (mostrarModalEditar)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Producto</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModalEditar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" placeholder="Ej: Cemento">
+                    </div>
+                    <div class="mb-3">
+                        <label>Precio</label>
+                        <input type="number" class="form-control" placeholder="Ej: 2500">
+                    </div>
+                    <div class="mb-3">
+                        <label>Fecha de Ingreso</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>Proveedor</label>
+                        <input type="text" class="form-control" placeholder="Ej: Materiales del Valle">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CerrarModalEditar">Cancelar</button>
+                    <button class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<Producto> productos = new List<Producto>();
+    private bool mostrarModalAgregar = false;
+    private bool mostrarModalEditar = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = new List<Producto>
+        {
+            new Producto { Id = 1, Nombre = "Cemento", Precio = 2500, FechaIngreso = new DateTime(2024, 3, 1), FechaSalida = new DateTime(2024, 3, 10), Proveedor = "Construcciones S.A." },
+            new Producto { Id = 2, Nombre = "Ladrillos", Precio = 500, FechaIngreso = new DateTime(2024, 3, 5), FechaSalida = null, Proveedor = "Materiales del Valle" },
+            new Producto { Id = 3, Nombre = "Pintura", Precio = 7500, FechaIngreso = new DateTime(2024, 2, 20), FechaSalida = new DateTime(2024, 3, 15), Proveedor = "Colores y Acabados Ltda." }
+        };
+    }
+
+    private void AbrirModalAgregar()
+    {
+        mostrarModalAgregar = true;
+    }
+
+    private void CerrarModalAgregar()
+    {
+        mostrarModalAgregar = false;
+    }
+
+    private void AbrirModalEditar()
+    {
+        mostrarModalEditar = true;
+    }
+
+    private void CerrarModalEditar()
+    {
+        mostrarModalEditar = false;
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    public class Producto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public decimal Precio { get; set; }
+        public DateTime FechaIngreso { get; set; }
+        public DateTime? FechaSalida { get; set; }
+        public string Proveedor { get; set; }
+    }
+}

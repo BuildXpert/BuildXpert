@@ -38,5 +38,8 @@ main {
     }
 
 
-
-
+.custom-container {
+    max-width: 500px;
+    margin: 50px;
+    padding: 20px;
+}
