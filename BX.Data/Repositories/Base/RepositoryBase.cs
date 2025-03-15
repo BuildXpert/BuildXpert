@@ -124,7 +124,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     /// </summary>
     /// <param name="entity">The entity to check for existence.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating if the entity exists.</returns>
-    public async Task<bool> ExistsAsync(T entity)
+    public async Task<bool> BExistsAsync(T entity)
     {
         try
         {

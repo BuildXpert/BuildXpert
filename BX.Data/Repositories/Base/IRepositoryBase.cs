@@ -46,7 +46,7 @@ namespace BX.Data
         /// </summary>
         /// <param name="entity">The entity to check for existence.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating if the entity exists.</returns>
-        Task<bool> ExistsAsync(T entity);
+        Task<bool> BExistsAsync(T entity);
 
         IQueryable<T> ReadQueriableAsync();
     }

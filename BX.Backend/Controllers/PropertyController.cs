@@ -29,9 +29,9 @@ namespace BX.Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> FindPropertyById(int id)
+        public async Task<IActionResult> FindById(int id)
         {
-            var property = await _propertyManager.GetPropertyAsync(id);
+            var property = await _propertyManager.GetPropertyByIdAsync(id);
             if (property != null)
                 return Ok(property);
             return NotFound();
@@ -59,7 +59,27 @@ namespace BX.Backend.Controllers
         #endregion
 
         #region PUT
-        [HttpPut]
+        //[HttpPut]
+        //public async Task<IActionResult> Update([FromBody] Property property)
+        //{
+        //    var result = await _propertyManager.UpdatePropertyAsync(property);
+        //    if (result)
+        //        return Ok();
+        //    return BadRequest();
+        //}
+        #endregion
+
+        #region PATCH
+        //[HttpPatch("{id}/status")]
+        //public async Task<IActionResult> UpdateStatus([FromBody] Property property)
+        //{
+        //    var result = await _propertyManager.UpdatePropertyStatusAsync(property);
+        //    if (result)
+        //        return Ok();
+        //    return BadRequest();
+        //}
+
+        [HttpPatch("update")]
         public async Task<IActionResult> Update([FromBody] Property property)
         {
             var result = await _propertyManager.UpdatePropertyAsync(property);
@@ -69,31 +89,11 @@ namespace BX.Backend.Controllers
         }
         #endregion
 
-        #region PATCH
-        [HttpPatch]
-        public async Task<IActionResult> UpdateStatus([FromBody] Property property)
-        {
-            var result = await _propertyManager.UpdatePropertyStatusAsync(property);
-            if (result)
-                return Ok();
-            return BadRequest();
-        }
-
-        [HttpPatch]
-        public async Task<IActionResult> UpdateDetails([FromBody] Property property)
-        {
-            var result = await _propertyManager.UpdatePropertyDetailsAsync(property);
-            if (result)
-                return Ok();
-            return BadRequest();
-        }
-        #endregion
-
         #region DELETE
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] Property property)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = await _propertyManager.DeletePropertyAsync(property);
+            var result = await _propertyManager.DeletePropertyAsync(id);
             if (result)
                 return Ok();
             return BadRequest();

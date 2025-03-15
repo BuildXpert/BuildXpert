@@ -13,42 +13,30 @@ namespace BX.Data.Repositories
         public PropertyRepository(BuildXpertContext context) : base(context)
         {
         }
-
         public async Task<IEnumerable<Property>> GetPropertiesAsync()
         {
             return await ReadAsync();
         }
-
-        public async Task<Property> GetPropertyAsync(int id)
-        {
-            return (await ReadAsync()).FirstOrDefault(p => p.Id == id);
-        }
-
         public async Task<Property> GetPropertyByIdAsync(int id)
         {
             return await ReadOneAsync(id);
         }
-
         public async Task<bool> CreatePropertyAsync(Property property)
         {
             return await CreateAsync(property);
         }
-
         public async Task<bool> UpdatePropertyAsync(Property property)
         {
             return await UpdateAsync(property);
         }
-
         public async Task<bool> DeletePropertyAsync(Property property)
         {
             return await DeleteAsync(property);
         }
-
         public async Task<bool> ExistsAsync(Property property)
         {
-            return await ExistsAsync(property);
+            return await BExistsAsync(property);
         }
-
         public async Task<List<Property>> GetFilteredPropertiesAsync(string searchText, string status)
         {
             var query = ReadQueriableAsync();
@@ -65,7 +53,6 @@ namespace BX.Data.Repositories
 
             return await query.ToListAsync();
         }
-
         public async Task<bool> UpdatePropertyStatusAsync(Property property)
         {
             return await UpdateAsync(property);
