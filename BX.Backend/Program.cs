@@ -1,3 +1,5 @@
+using BX.Business.Managers;
+using BX.Data.Repositories;
 using BX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +13,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IPropertyManager, PropertyManager>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+//builder.Services.AddScoped<IBuildXpertContext>(provider => provider.GetService<BuildXpertContext>());
 #region SQL Server Connection
 //Run this string as your secret in the local terminal
 //dotnet user-secrets set "ConnectionStrings:userSecretDB" "<connection-string>"
