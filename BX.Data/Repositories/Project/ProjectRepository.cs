@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BX.Models;
+
+namespace BX.Data.Repositories
+{
+    public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
+    {
+        public ProjectRepository(BuildXpertContext context) : base(context)
+        {
+        }
+        public async Task<IEnumerable<Project>> GetProjectsAsync()
+        {
+            return await ReadAsync();
+        }
+
+        public async Task<Project> GetProjectAsync(int id)
+        {
+            return (await ReadAsync()).FirstOrDefault(p => p.Id == id);
+        }
+
+        public async Task<Project> GetProjectByIdAsync(int id)
+        {
+            return await ReadOneAsync(id);
+        }
+
+        public async Task<bool> CreateProjectAsync(Project project)
+        {
+            return await CreateAsync(project);
+        }
+
+        public async Task<bool> UpdateProjectAsync(Project project)
+        {
+            return await UpdateAsync(project);
+        }
+
+        public async Task<bool> DeleteProjectAsync(Project project)
+        {
+            return await DeleteAsync(project);
+        }
+
+        public async Task<bool> ExistsAsync(Project project)
+        {
+            return await ExistsAsync(project);
+        }
+
+
+    }
+}
