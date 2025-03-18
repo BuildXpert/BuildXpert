@@ -5,7 +5,7 @@ using BX.Models;
 
 namespace BX.Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class PropertyController : ControllerBase
     {
@@ -38,7 +38,7 @@ namespace BX.Backend.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search(string searchText, string status)
+        public async Task<IActionResult> Search(string? searchText, string? status)
         {
             var properties = await _propertyManager.GetFilteredPropertiesAsync(searchText, status);
             if (properties != null)

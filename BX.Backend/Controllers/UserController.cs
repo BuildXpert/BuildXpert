@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BX.Backend.Controllers
 {
+    [Route("[controller]")]
+    [ApiController]
     public class UserController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
     }
 }

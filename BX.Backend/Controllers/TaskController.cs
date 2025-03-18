@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BX.Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TaskController : ControllerBase
     {
