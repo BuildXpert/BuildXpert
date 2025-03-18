@@ -9,8 +9,6 @@ namespace BX.Business.Managers
         Task<IEnumerable<Property>> GetFilteredPropertiesAsync(string searchText, string status);
         Task<bool> CreatePropertyAsync(Property property);
         Task<bool> UpdatePropertyAsync(Property property);
-        Task<bool> UpdatePropertyStatusAsync(Property property);
-        Task<bool> UpdatePropertyDetailsAsync(Property property);
         Task<bool> DeletePropertyAsync(int id);
     }
 }

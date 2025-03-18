@@ -45,41 +45,11 @@ namespace BX.Business.Managers
         #endregion
 
         #region PATCH
-        public async Task<bool> UpdatePropertyStatusAsync(Property property)
-        {
-            return await _propertyRepository.UpdatePropertyStatusAsync(property);
-        }
-        public async Task<bool> UpdatePropertyDetailsAsync(Property property)
-        {
-            Property existingProperty = await _propertyRepository.GetPropertyByIdAsync(property.Id);
-            if (existingProperty == null)
-            {
-                throw new Exception("Property not found");
-            }
-            existingProperty.Name = property.Name;
-            existingProperty.Description = property.Description;
-            existingProperty.Price = property.Price;
-            existingProperty.Status = property.Status;
-            existingProperty.CreatedDate = property.CreatedDate;
-            existingProperty.ConstructionType = property.ConstructionType;
-            existingProperty.Province = property.Province;
-            existingProperty.Canton = property.Canton;
-            existingProperty.ConstructionSize = property.ConstructionSize;
-            existingProperty.LandSize = property.LandSize;
-            existingProperty.Bedrooms = property.Bedrooms;
-            existingProperty.Bathrooms = property.Bathrooms;
-            existingProperty.Price = property.Price;
-            existingProperty.Floors = property.Floors;
-            existingProperty.HasGarage = property.HasGarage;
-            existingProperty.GarageCapacity = property.GarageCapacity;
-            existingProperty.IsCondominium = property.IsCondominium;
-            return await _propertyRepository.UpdatePropertyDetailsAsync(property);
-        }
         public async Task<bool> UpdatePropertyAsync(Property newProperty)
         {
             Property existingProperty = await _propertyRepository.GetPropertyByIdAsync(newProperty.Id);
             if (existingProperty==null) return false;
-            UpdatePropertyDetails(existingProperty, newProperty);
+            UpdatePropertyAttributes(existingProperty, newProperty);
             return await _propertyRepository.UpdatePropertyAsync(existingProperty);
         }
         #endregion
@@ -96,7 +66,8 @@ namespace BX.Business.Managers
         }
         #endregion
 
-        private void UpdatePropertyDetails(Property existingProperty, Property property)
+        #region Helper Methods
+        private void UpdatePropertyAttributes(Property existingProperty, Property property)
         {
             existingProperty.Name = property.Name;
             existingProperty.Description = property.Description;
@@ -116,5 +87,6 @@ namespace BX.Business.Managers
             existingProperty.GarageCapacity = property.GarageCapacity;
             existingProperty.IsCondominium = property.IsCondominium;
         }
+        #endregion
     }
 }

@@ -11,7 +11,5 @@ namespace BX.Data.Repositories
         Task<IEnumerable<Property>> GetPropertiesAsync();
         Task<bool> UpdatePropertyAsync(Property property);
         Task<List<Property>> GetFilteredPropertiesAsync(string searchText, string status);
-        Task<bool> UpdatePropertyStatusAsync(Property property);
-        Task<bool> UpdatePropertyDetailsAsync(Property property);
     }
 }

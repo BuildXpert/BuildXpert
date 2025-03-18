@@ -53,13 +53,5 @@ namespace BX.Data.Repositories
 
             return await query.ToListAsync();
         }
-        public async Task<bool> UpdatePropertyStatusAsync(Property property)
-        {
-            return await UpdateAsync(property);
-        }
-        public async Task<bool> UpdatePropertyDetailsAsync(Property property)
-        {
-            return await UpdateAsync(property);
-        }
     }
 }

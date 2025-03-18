@@ -59,26 +59,9 @@ namespace BX.Backend.Controllers
         #endregion
 
         #region PUT
-        //[HttpPut]
-        //public async Task<IActionResult> Update([FromBody] Property property)
-        //{
-        //    var result = await _propertyManager.UpdatePropertyAsync(property);
-        //    if (result)
-        //        return Ok();
-        //    return BadRequest();
-        //}
         #endregion
 
         #region PATCH
-        //[HttpPatch("{id}/status")]
-        //public async Task<IActionResult> UpdateStatus([FromBody] Property property)
-        //{
-        //    var result = await _propertyManager.UpdatePropertyStatusAsync(property);
-        //    if (result)
-        //        return Ok();
-        //    return BadRequest();
-        //}
-
         [HttpPatch("update")]
         public async Task<IActionResult> Update([FromBody] Property property)
         {
