@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System;
 
-namespace BX.Frontend.Services
+namespace BX.Services
 {
     public class ProjectService
     {

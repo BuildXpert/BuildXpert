@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 
-@inject ProjectService ProjectService
+@* @inject ProjectService ProjectService *@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @inject UserManager<ApplicationUser> UserManager
@@ -57,7 +57,7 @@ else
             CurrentUser = await UserManager.GetUserAsync(user);
             if (CurrentUser != null)
             {
-                Projects = await ProjectService.GetProjectsAsync();
+                // Projects = await ProjectService.GetProjectsAsync();
                 Projects = Projects.Where(p => p.ClientId == CurrentUser.Id).ToList();
             }
         }
