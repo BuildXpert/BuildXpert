@@ -3,6 +3,9 @@ using BX.Data.Repositories;
 using BX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using BX.Services;
+using Microsoft.AspNetCore.Identity;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +16,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+#region Services implementation
+builder.Services.AddScoped<IAuthService, UserService>();
 builder.Services.AddScoped<IPropertyManager, PropertyManager>();
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
-//builder.Services.AddScoped<IBuildXpertContext>(provider => provider.GetService<BuildXpertContext>());
+#endregion
+
+
 #region SQL Server Connection
 //Run this string as your secret in the local terminal
 //dotnet user-secrets set "ConnectionStrings:userSecretDB" "<connection-string>"
@@ -32,6 +40,11 @@ builder.Services.AddDbContext<BuildXpertContext>(options =>
 });
 #endregion
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<BuildXpertContext>()
+    .AddDefaultTokenProviders();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,11 +54,28 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = { "Admin", "Cliente", "MOBS", "Bancario" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHttpsRedirection();
 
 #region Database Migrations
 using (var scope = app.Services.CreateScope())

@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Identity
 @using BX.Models
 @using BX.Frontend.Services
-@inject ProjectService ProjectService
+@* @inject ProjectService ProjectService *@
 @inject NavigationManager Navigation
 
 <style>
@@ -176,7 +176,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        properties = await ProjectService.GetProjectsAsync();
+        // properties = await ProjectService.GetProjectsAsync();
     }
 
     private void ApplyFilters()

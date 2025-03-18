@@ -1,7 +1,7 @@
 ﻿@page "/projects"
 @using BX.Models
 @using BX.Frontend.Services
-@inject ProjectService ProjectService
+@* @inject ProjectService ProjectService *@
 @inject NavigationManager Navigation
 
 <div class="container mt-4">
@@ -69,7 +69,7 @@
 
     private async Task DeleteProject(int id)
     {
-        await ProjectService.DeleteProjectAsync(id);
+        // await ProjectService.DeleteProjectAsync(id);
         await FilterProjects();
     }
 
@@ -80,7 +80,7 @@
 
     private async Task FilterProjects()
     {
-        filteredProjects = await ProjectService.GetFilteredProjectsAsync(searchText, "");
+        // filteredProjects = await ProjectService.GetFilteredProjectsAsync(searchText, "");
     }
 
     private async Task ClearFilters()

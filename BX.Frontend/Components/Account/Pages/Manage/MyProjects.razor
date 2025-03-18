@@ -2,7 +2,7 @@
 @using BX.Models
 @using Microsoft.AspNetCore.Identity
 @using BX.Frontend.Services
-@inject ProjectService ProjectService
+@* @inject ProjectService ProjectService *@
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
@@ -53,7 +53,7 @@ else
             CurrentUser = await UserManager.GetUserAsync(user);
             if (CurrentUser != null)
             {
-                Projects = await ProjectService.GetProjectsAsync();
+                // Projects = await ProjectService.GetProjectsAsync();
                 Projects = Projects.Where(p => p.ClientId == CurrentUser.Id || p.AdminId == CurrentUser.Id).ToList();
             }
         }
