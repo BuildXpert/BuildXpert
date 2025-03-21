@@ -2,8 +2,10 @@
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Identity
 @using BX.Models
+@using System.Diagnostics
 
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
@@ -86,22 +88,20 @@
     {
         var httpClient = new HttpClient();
         var response = await httpClient.PostAsJsonAsync("https://localhost:7164/AuthUser/Login", Input);
+        var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+        Console.WriteLine(result);
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
             var redirectUrl = result["redirectUrl"];
             NavigationManager.NavigateTo(redirectUrl, forceLoad: true);
         }
         else
         {
-            var errorResponse = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            errorMessage = errorResponse["error"];
+            errorMessage = result["error"];
+
         }
     }
-}
-
-
 
 
 }
