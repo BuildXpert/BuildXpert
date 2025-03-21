@@ -7,9 +7,10 @@ using BX.Services;
 using Microsoft.AspNetCore.Identity;
 
 
-
 var builder = WebApplication.CreateBuilder(args);
 
+
+#region Services Implementation
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -17,12 +18,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-#region Services implementation
 builder.Services.AddScoped<IAuthService, UserService>();
 builder.Services.AddScoped<IPropertyManager, PropertyManager>();
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 #endregion
 
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<BuildXpertContext>()
+    .AddDefaultTokenProviders();
 
 #region SQL Server Connection
 //Run this string as your secret in the local terminal
@@ -39,11 +43,6 @@ builder.Services.AddDbContext<BuildXpertContext>(options =>
     sqlOptions => sqlOptions.MigrationsAssembly("BX.Backend"));
 });
 #endregion
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<BuildXpertContext>()
-    .AddDefaultTokenProviders();
-
 
 var app = builder.Build();
 

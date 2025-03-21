@@ -1,31 +1,26 @@
 using BX.Frontend.Components;
 using BX.Frontend.Components.Account;
 using BX.Models;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Services Implementation
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
 
-//builder.Services.AddScoped<PropertyService>();
-//builder.Services.AddScoped<SupplierService>();
-
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
 //builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>(); //Not included yet
 
 builder.Services.AddAuthorizationCore();
-
-
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+#endregion
 
 #region SQL Server Connection
 //Run this string as your secret in the local terminal
@@ -42,15 +37,6 @@ builder.Services.AddAuthorizationCore();
 //});
 #endregion
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//    .AddEntityFrameworkStores<BuildXpertContext>()
-//    .AddDefaultTokenProviders();
-
-
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-
-//builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
