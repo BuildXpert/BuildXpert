@@ -36,6 +36,17 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
             throw new PAWException(ex);
         }
     }
+    //public async Task<int> CreateReturnIdAsync(T entity)    {
+    //    try
+    //    {
+    //        await _context.AddAsync(entity);
+    //        return await SaveAsync();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw new PAWException(ex);
+    //    }
+    //}
 
     /// <summary>
     /// Updates an existing entity of type T asynchronously.

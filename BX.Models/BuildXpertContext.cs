@@ -10,13 +10,13 @@ namespace BX.Models
 {
     public class BuildXpertContext : IdentityDbContext<ApplicationUser>, IBuildXpertContext
     {
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<ProjectState> ProjectStates { get; set; }
-        public DbSet<ProjectTask> Tasks { get; set; }
-        public DbSet<Property> Properties { get; set; }
-        public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<SupplierPayment> SupplierPayments { get; set; }
-        public DbSet<SupplierOrder> SupplierOrders { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<ProjectStatus> ProjectStatus { get; set; }
+        public DbSet<ProjectTask> ProjectTask { get; set; }
+        public DbSet<Property> Property { get; set; }
+        public DbSet<Supplier> Supplier { get; set; }
+        public DbSet<SupplierPayment> SupplierPayment { get; set; }
+        public DbSet<SupplierOrder> SupplierOrder { get; set; }
 
         public BuildXpertContext() : base()
         {
@@ -31,6 +31,8 @@ namespace BX.Models
         {
             base.OnModelCreating(modelBuilder);
             // 🔹 Configurar relación entre Project y Cliente (Usuario)
+
+            #region PROJECT MODEL CONFIGURATION
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.Client)
                 .WithMany(p => p.Projects)
@@ -44,10 +46,23 @@ namespace BX.Models
                 .HasForeignKey(p => p.AdminId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 🔹 Configurar precisión para `decimal`
             modelBuilder.Entity<Project>()
-                .Property(p => p.Price)
-                .HasColumnType("decimal(18, 2)");
+                .HasOne(p => p.Property)
+                .WithOne(p => p.Project)
+                .HasForeignKey<Project>(p => p.PropertyId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Status)
+                .WithMany(p => p.Projects)
+                .HasForeignKey(p => p.ProjectStatusId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Project>()
+                .HasMany(p => p.Tasks)
+                .WithOne(p => p.Project)
+                .OnDelete(DeleteBehavior.Cascade);
+            #endregion
 
             modelBuilder.Entity<Property>()
                 .Property(p => p.Price)

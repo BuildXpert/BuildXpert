@@ -48,7 +48,7 @@ namespace BX.Backend.Controllers
         #endregion
 
         #region POST
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] Property property)
         {
             var result = await _propertyManager.CreatePropertyAsync(property);

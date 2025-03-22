@@ -21,6 +21,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAuthService, UserService>();
 builder.Services.AddScoped<IPropertyManager, PropertyManager>();
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+builder.Services.AddScoped<IProjectManager, ProjectManager>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 #endregion
 
 

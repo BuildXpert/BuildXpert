@@ -4,6 +4,7 @@ using BX.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BX.Backend.Migrations
 {
     [DbContext(typeof(BuildXpertContext))]
-    partial class BuildXpertContextModelSnapshot : ModelSnapshot
+    [Migration("20250322041105_Project")]
+    partial class Project
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,9 +114,10 @@ namespace BX.Backend.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClientId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -139,10 +143,9 @@ namespace BX.Backend.Migrations
 
                     b.HasIndex("ProjectStatusId");
 
-                    b.HasIndex("PropertyId")
-                        .IsUnique();
+                    b.HasIndex("PropertyId");
 
-                    b.ToTable("Project");
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("BX.Models.ProjectStatus", b =>
@@ -160,7 +163,7 @@ namespace BX.Backend.Migrations
 
                     b.HasKey("ProjectStatusId");
 
-                    b.ToTable("ProjectStatus");
+                    b.ToTable("ProjectStates");
                 });
 
             modelBuilder.Entity("BX.Models.ProjectTask", b =>
@@ -193,7 +196,7 @@ namespace BX.Backend.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectTask");
+                    b.ToTable("Tasks");
                 });
 
             modelBuilder.Entity("BX.Models.Property", b =>
@@ -260,7 +263,7 @@ namespace BX.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Property");
+                    b.ToTable("Properties");
                 });
 
             modelBuilder.Entity("BX.Models.Supplier", b =>
@@ -293,7 +296,7 @@ namespace BX.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Supplier");
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("BX.Models.SupplierOrder", b =>
@@ -335,7 +338,7 @@ namespace BX.Backend.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("SupplierOrder");
+                    b.ToTable("SupplierOrders");
                 });
 
             modelBuilder.Entity("BX.Models.SupplierPayment", b =>
@@ -359,7 +362,7 @@ namespace BX.Backend.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("SupplierPayment");
+                    b.ToTable("SupplierPayments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -505,18 +508,19 @@ namespace BX.Backend.Migrations
                     b.HasOne("BX.Models.ApplicationUser", "Client")
                         .WithMany("Projects")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("BX.Models.ProjectStatus", "Status")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BX.Models.Property", "Property")
-                        .WithOne("Project")
-                        .HasForeignKey("BX.Models.Project", "PropertyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
@@ -627,12 +631,6 @@ namespace BX.Backend.Migrations
             modelBuilder.Entity("BX.Models.ProjectStatus", b =>
                 {
                     b.Navigation("Projects");
-                });
-
-            modelBuilder.Entity("BX.Models.Property", b =>
-                {
-                    b.Navigation("Project")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BX.Models.Supplier", b =>

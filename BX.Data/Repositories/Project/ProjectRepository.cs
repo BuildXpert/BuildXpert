@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BX.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BX.Data.Repositories
 {
@@ -47,6 +48,20 @@ namespace BX.Data.Repositories
             return await ExistsAsync(project);
         }
 
+        public async Task<IEnumerable<Project>> GetFilteredProjectsAsync(string searchText, string status)
+        {
+            IQueryable<Project> query = ReadQueriableAsync();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                query = query.Where(p => p.Name.Contains(searchText) || p.Description.Contains(searchText));
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                //query = query.Where(p => p.Status == status);
+            }
+            return await query.ToListAsync();
+        }
 
     }
 }
