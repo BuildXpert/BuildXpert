@@ -2,15 +2,16 @@
 @using BX.Frontend.Services
 @using Microsoft.AspNetCore.Identity
 @using BX.Models
-@* @inject ProjectService ProjectService *@
+@inject ProjectService ProjectService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 
 <style>
+    /* Estilos base */
     .property-header {
         position: relative;
         width: 100%;
-        height: 800px;
+        height: 400px; 
         background: url("https://t4.ftcdn.net/jpg/03/20/87/47/360_F_320874769_eyM3wGufm3AgcWgXH1t5LxrOYppRfW4A.jpg") center center / cover no-repeat;
         display: flex;
         align-items: center;
@@ -26,74 +27,117 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, white 100%);
-            backdrop-filter: blur(5px);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8));
         }
 
         .property-header h1 {
-            font-size: 5rem;
+            font-size: 2.5rem; 
             font-weight: bold;
             position: relative;
-            padding-top:100px;
-
+            z-index: 1;
+            text-align: center; 
+            padding: 0 20px; 
         }
 
     .carousel-item img {
-        height: 100%;
+        height: 500px; 
         width: 100%;
         object-fit: cover;
-        padding-right: 20px;
-    }
-
-    .carousel-inner {
-        height: 100%;
-    }
-
-    .fixed-carousel-img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-
     }
 
     .property-info {
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        min-height: 00px;
-
+        margin-top: 20px;
     }
 
     .property-container {
-        background: rgba(255, 255, 255, 0.9);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-top: -250px;
-        position: relative;
-        z-index: 1;
-        width: 95%;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom:70px;
-    }
-
-    .row.g-0.d-flex {
-        align-items: stretch;
+        width: 90%;
+        margin: 0 auto;
     }
 
     .btn-action {
-        margin: 15px;
+        margin: 0 5px; 
+        flex: 1; 
+        max-width: 500px; 
     }
 
+    .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
 
+    .icon-item {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 
+        .icon-item i {
+            font-size: 2.5rem;
+            color: gray;
+            margin-bottom: 15px;
+        }
 
+        .icon-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #333;
+            text-align: center;
+        }
 
+    @@media (max-width: 768px) {
+        .property-header {
+            height: 300px;
+        }
+
+            .property-header h1 {
+                font-size: 2rem;
+            }
+
+        .carousel-item img {
+            height: 250px; 
+        }
+
+        .icon-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .property-header {
+            height: 250px; 
+        }
+
+            .property-header h1 {
+                font-size: 1.5rem;
+            }
+
+        .carousel-item img {
+            height: 200px; 
+        }
+
+        .icon-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .btn-action {
+            width: 100%;
+            margin: 5px 0;
+    }
 </style>
+
+<!-- Resto del código... -->
 
 <div class="property-header">
     <h1>@(property?.Name ?? "Cargando...")</h1>
@@ -111,66 +155,89 @@
     }
     else
     {
-        <div class="property-container pb-4">
-            <div class="row g-0 d-flex align-items-stretch">
-                <!-- Columna del Carrusel -->
-                <div class="col-md-6 d-flex">
-                    <div id="propertyCarousel" class="carousel slide w-100 h-100" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            @for (int i = 0; i < propertyImages.Count; i++)
-                            {
-                                <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"></button>
-                            }
-                        </div>
-                        <div class="carousel-inner h-100">
-                            @for (int i = 0; i < propertyImages.Count; i++)
-                            {
-                                <div class="carousel-item @(i == 0 ? "active" : "") h-100">
-                                    <img src="@propertyImages[i]" class="d-block w-100 fixed-carousel-img" alt="Imagen de la propiedad @(i + 1)">
-                                </div>
-                            }
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Siguiente</span>
-                        </button>
-                    </div>
+        <div class="property-container">
+            <!-- Carrusel -->
+            <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    @for (int i = 0; i < propertyImages.Count; i++)
+                    {
+                        <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"></button>
+                    }
                 </div>
-
-                <!-- Columna de la ficha técnica -->
-                <div class="col-md-6 d-flex">
-                    <div class="property-info w-100 d-flex flex-column justify-content-between">
-                        <div>
-                            <h3>@property.Name</h3>
-                            <p class="text-muted">@property.Description</p>
-                            <p><strong>📍 Ubicación:</strong> @($"{property.Province}, {property.Canton}")</p>
-                            <p><strong>🏠 Tipo:</strong> @property.ConstructionType</p>
-                            <p><strong>📏 Área:</strong> @(property.ConstructionSize + property.LandSize) m²</p>
-                            <p><strong>💰 Precio:</strong> <span class="badge bg-success badge-custom">@($"{property.Price:C}")</span></p>
-                            <p><strong>🛏 Habitaciones:</strong> @property.Bedrooms</p>
-                            <p><strong>🚿 Baños:</strong> @property.Bathrooms</p>
-                            <p><strong>🚗 Cochera:</strong> @(property.HasGarage ? $"Sí, para {property.GarageCapacity} vehículos" : "No")</p>
-                            <p><strong>🏢 Plantas:</strong> @property.Floors</p>
-                            <p><strong>🏡 ¿En condominio?</strong> @(property.IsCondominium ? "Sí" : "No")</p>
+                <div class="carousel-inner">
+                    @for (int i = 0; i < propertyImages.Count; i++)
+                    {
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            <img src="@propertyImages[i]" class="d-block w-100" alt="Imagen de la propiedad @(i + 1)">
                         </div>
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
+            </div>
 
-                        <div class="mt-4 text-center">
-                            <button class="btn btn-outline-secondary btn-action" @onclick="GoBack">Volver</button>
-                            <a class="btn btn-primary me-2" href="/project-details/@property.Id">Ver Proyecto</a>
-                            <button class="btn btn-warning" @onclick="() => ShowEditModal(property)">Editar</button>
-                            @if (isAdmin)
-                            {
-                                <button class="btn btn-outline-danger btn-action" @onclick="() => DeleteProperty(property.Id)">Eliminar</button>
-                            }
-                        </div>
+            <!-- Información destacada en cuadrícula 3x3 -->
+            <div class="property-info">
+                <h3>Información destacada</h3>
+                <div class="icon-grid">
+                    <div class="icon-item">
+                        <i class="fas fa-bed"></i>
+                        <p><strong>Habitaciones:</strong> @property.Bedrooms</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-bath"></i>
+                        <p><strong>Baños:</strong> @property.Bathrooms</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-car"></i>
+                        <p><strong>Cochera:</strong> @(property.HasGarage ? $"Sí, para {property.GarageCapacity} vehículos" : "No")</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-building"></i>
+                        <p><strong>Plantas:</strong> @property.Floors</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-home"></i>
+                        <p><strong>¿En condominio?</strong> @(property.IsCondominium ? "Sí" : "No")</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-ruler-combined"></i>
+                        <p><strong>Área:</strong> @(property.ConstructionSize + property.LandSize) m²</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p><strong>Ubicación:</strong> @($"{property.Province}, {property.Canton}")</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-dollar-sign"></i>
+                        <p><strong>Precio:</strong> @($"{property.Price:C}")</p>
+                    </div>
+                    <div class="icon-item">
+                        <i class="fas fa-home"></i>
+                        <p><strong>Tipo:</strong> @property.ConstructionType</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Botones de acción -->
+            <div class="text-center mt-4 d-flex justify-content-between">
+                <button class="btn btn-outline-secondary btn-action" @onclick="GoBack">Volver</button>
+                <a class="btn btn-primary btn-action" href="/project-details/@property.Id">Ver Proyecto</a>
+                <button class="btn btn-warning btn-action" @onclick="() => ShowEditModal(property)">Editar</button>
+                @if (isAdmin)
+                {
+                    <button class="btn btn-outline-danger btn-action" @onclick="() => DeleteProperty(property.Id)">Eliminar</button>
+                }
+            </div>
         </div>
+
+
 
 
         <!-- Modal para editar la propiedad -->
@@ -232,7 +299,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // property = await ProjectService.GetProjectByIdAsync(Id);
+        property = await ProjectService.GetProjectByIdAsync(Id);
     }
 
     private void GoBack()
@@ -244,7 +311,7 @@
     {
         if (await JSRuntime.InvokeAsync<bool>("confirm", new object[] { "¿Estás seguro de eliminar esta propiedad?" }))
         {
-            // await ProjectService.DeleteProjectAsync(id);
+            await ProjectService.DeleteProjectAsync(id);
             Navigation.NavigateTo("/properties");
         }
     }
@@ -252,15 +319,15 @@
     private void ShowEditModal(Project property)
     {
         editProperty = new Project
-            {
-                Id = property.Id,
-                Name = property.Name,
-                Description = property.Description,
-                Province = property.Province,
-                Price = property.Price,
-                Bedrooms = property.Bedrooms,
-                Bathrooms = property.Bathrooms
-            };
+        {
+            Id = property.Id,
+            Name = property.Name,
+            Description = property.Description,
+            Province = property.Province,
+            Price = property.Price,
+            Bedrooms = property.Bedrooms,
+            Bathrooms = property.Bathrooms
+        };
         showModal = true;
     }
 
@@ -271,7 +338,7 @@
 
     private async Task SaveChanges()
     {
-        // await ProjectService.UpdateProjectAsync(editProperty);
+        await ProjectService.UpdateProjectAsync(editProperty);
         showModal = false;
         Navigation.NavigateTo($"/property-details/{editProperty.Id}", forceLoad: true);
     }

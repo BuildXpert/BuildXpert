@@ -2,14 +2,58 @@
 @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "MOBS")]
 <PageTitle>Dashboard Maestro de Obras</PageTitle>
 
-<h2 class="text-center">Bienvenido Maestro de Obras</h2>
+<h2 class="text-center pt-5 mb-5">Bienvenido Maestro de Obras</h2>
 
-<div class="container mt-4">
-    <div class="card">
+<div class="container">
+    <!-- Sección: Gestión de construcción -->
+    <div class="card shadow-sm mb-5">
         <div class="card-body">
-            <h4>Gestión de Construcción</h4>
+            <h4>👷 Gestión de Construcción</h4>
             <p>Consulta el estado de las obras y asigna tareas.</p>
             <button class="btn btn-warning">Ver Obras</button>
+        </div>
+    </div>
+
+    <!-- Sección: Proyectos Activos -->
+    <div class="row gy-4">
+        <div class="col-12">
+            <h4>🏗️ Proyectos Activos</h4>
+        </div>
+
+        <!-- Proyecto 1 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Casa Escazú</h5>
+                    <p class="card-text">Construcción de vivienda de 2 pisos con acabados premium.</p>
+                    <p><strong>Estado:</strong> Activo</p>
+                    <button class="btn btn-outline-primary btn-sm">Ver Detalles</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyecto 2 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Residencial San José</h5>
+                    <p class="card-text">Proyecto de 10 casas en conjunto cerrado.</p>
+                    <p><strong>Estado:</strong> Activo</p>
+                    <button class="btn btn-outline-primary btn-sm">Ver Detalles</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyecto 3 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Ampliación Local Comercial</h5>
+                    <p class="card-text">Obra en Heredia centro para expansión de tienda.</p>
+                    <p><strong>Estado:</strong> Activo</p>
+                    <button class="btn btn-outline-primary btn-sm">Ver Detalles</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

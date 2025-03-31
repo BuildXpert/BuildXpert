@@ -1,25 +1,78 @@
 ﻿@page "/projects"
 @using BX.Models
 @using BX.Frontend.Services
-@* @inject ProjectService ProjectService *@
+@inject ProjectService ProjectService
 @inject NavigationManager Navigation
 
 <div class="container mt-4">
-    <h3 class="text-center text-primary">Lista de Proyectos</h3>
+    <h3 class="text-center text-primary">🏗 Lista de Proyectos</h3>
     <p class="text-muted text-center">Explora nuestros proyectos en desarrollo y completados.</p>
 
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <input type="text" class="form-control" placeholder="Buscar por nombre o descripción..." @bind="searchText" />
+    <!-- Filtros de búsqueda -->
+    <div class="card shadow-lg p-4 mb-4 mx-auto" style="max-width: 2000px;">
+        <h5 class="text-center text-secondary fs-5">🎯 Filtros de búsqueda</h5>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label fs-6">🔍 Buscar por Nombre o Descripción</label>
+                <input type="text" class="form-control form-control-sm" placeholder="Ej: Casa moderna..." @bind="searchText" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fs-6">🏗 Tipo de Construcción</label>
+                <select class="form-select form-select-sm" @bind="constructionType">
+                    <option value="">Todos</option>
+                    <option value="Prefabricados">Prefabricados</option>
+                    <option value="Block">Block</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fs-6">📍 Estado del Proyecto</label>
+                <select class="form-select form-select-sm" @bind="status">
+                    <option value="">Todos</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Construcción">Construcción</option>
+                    <option value="Venta">Venta</option>
+                    <option value="Remodelación">Remodelación</option>
+                </select>
+            </div>
         </div>
-        <div class="col-md-2">
-            <button class="btn btn-outline-primary w-100" @onclick="FilterProjects">🔍 Buscar</button>
+
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label class="form-label fs-6">📍 Provincia</label>
+                <input type="text" class="form-control form-control-sm" placeholder="Ej: San José" @bind="province" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fs-6">🏡 Cantón</label>
+                <input type="text" class="form-control form-control-sm" placeholder="Ej: Escazú" @bind="canton" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fs-6">💰 Rango de Precio</label>
+                <div class="d-flex">
+                    <input type="number" class="form-control form-control-sm me-2" placeholder="Mín." @bind="minPrice" min="1" />
+                    <input type="number" class="form-control form-control-sm" placeholder="Máx." @bind="maxPrice" min="1" />
+                </div>
+            </div>
         </div>
-        <div class="col-md-2">
-            <button class="btn btn-outline-secondary w-100" @onclick="ClearFilters">❌ Limpiar</button>
+
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label class="form-label fs-6">🛏 Habitaciones</label>
+                <input type="number" class="form-control form-control-sm" placeholder="Ej: 3" @bind="bedrooms" min="1" max="8" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fs-6">🚿 Baños</label>
+                <input type="number" class="form-control form-control-sm" placeholder="Ej: 2" @bind="bathrooms" min="1" max="8" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-outline-primary w-100" @onclick="FilterProjects">🔍 Buscar</button>
+                <button class="btn btn-outline-secondary w-100 ms-2" @onclick="ClearFilters">❌ Limpiar</button>
+            </div>
         </div>
     </div>
 
+
+    <!-- Estado de carga -->
     @if (filteredProjects == null)
     {
         <div class="text-center mt-4">
@@ -43,8 +96,17 @@
                         <img src="https://picsum.photos/300/200?random=@project.Id" class="card-img-top" alt="Imagen del proyecto">
 
                         <div class="card-body">
-                            <h5 class="card-title text-dark">@project.Name</h5>
-                            <p class="card-text text-muted">@project.Description</p>
+                            <h3 class="card-title text-dark">@project.Name</h3>
+                            <h5 class="card-text text-muted">@project.Description</h5>
+                            <div>
+                            </div>
+                            <p><strong>📍 Ubicación:</strong> @project.Province, @project.Canton</p>
+                            <p><strong>💰 Precio:</strong> @project.Price.ToString("C")</p>
+                            <p><strong>🏗 Tipo:</strong> @project.ConstructionType</p>
+                            <div style="display: flex; gap: 6.7rem;">
+                                <p><strong>🚿 Baños:</strong> @project.Bathrooms</p>
+                                <p><strong>🛏 Habitaciones:</strong> @project.Bedrooms</p>
+                            </div>
 
                             <div class="d-flex justify-content-between mt-3">
                                 <button class="btn btn-outline-primary w-100 me-2" @onclick="() => ViewDetails(project.Id)">Ver Detalles</button>
@@ -59,8 +121,16 @@
 </div>
 
 @code {
-    private List<Project> filteredProjects;
+    private List<Project> filteredProjects = new();
     private string searchText = "";
+    private string constructionType = "";
+    private string status = "";
+    private string province = "";
+    private string canton = "";
+    private int? minPrice;
+    private int? maxPrice;
+    private int? bedrooms;
+    private int? bathrooms;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,7 +139,7 @@
 
     private async Task DeleteProject(int id)
     {
-        // await ProjectService.DeleteProjectAsync(id);
+        await ProjectService.DeleteProjectAsync(id);
         await FilterProjects();
     }
 
@@ -80,12 +150,20 @@
 
     private async Task FilterProjects()
     {
-        // filteredProjects = await ProjectService.GetFilteredProjectsAsync(searchText, "");
+        filteredProjects = await ProjectService.GetFilteredProjectsAsync(searchText, constructionType, status, province, canton, minPrice, maxPrice, bedrooms, bathrooms);
     }
 
     private async Task ClearFilters()
     {
         searchText = "";
+        constructionType = "";
+        status = "";
+        province = "";
+        canton = "";
+        minPrice = null;
+        maxPrice = null;
+        bedrooms = null;
+        bathrooms = null;
         await FilterProjects();
     }
 }
