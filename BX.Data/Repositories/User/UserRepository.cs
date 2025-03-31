@@ -7,37 +7,32 @@ using BX.Models;
 
 namespace BX.Data.Repositories
 {
-    public class ApplicationUserRepository : RepositoryBase<ApplicationUser>, IApplicationUserRepository
+    public class UserRepository : RepositoryBase<ApplicationUser, string>, IUserRepository
     {
-        public ApplicationUserRepository(BuildXpertContext context) : base(context)
+        public UserRepository(BuildXpertContext context) : base(context)
         {
         }
-        public async Task<IEnumerable<ApplicationUser>> GetApplicationUsersAsync()
+        public async Task<IEnumerable<ApplicationUser>> GetUsersAsync()
         {
             return await ReadAsync();
         }
 
-        public async Task<ApplicationUser> GetApplicationUserAsync(int id)
-        {
-            return (await ReadAsync()).FirstOrDefault(p => p.Id.Equals(id));
-        }
-
-        public async Task<ApplicationUser> GetApplicationUserByIdAsync(int id)
+        public async Task<ApplicationUser> GetUserByIdAsync(string id)
         {
             return await ReadOneAsync(id);
         }
 
-        public async Task<bool> CreateApplicationUserAsync(ApplicationUser applicationUser)
+        public async Task<bool> CreateUserAsync(ApplicationUser applicationUser)
         {
             return await CreateAsync(applicationUser);
         }
 
-        public async Task<bool> UpdateApplicationUserAsync(ApplicationUser applicationUser)
+        public async Task<bool> UpdateUserAsync(ApplicationUser applicationUser)
         {
             return await UpdateAsync(applicationUser);
         }
 
-        public async Task<bool> DeleteApplicationUserAsync(ApplicationUser applicationUser)
+        public async Task<bool> DeleteUserAsync(ApplicationUser applicationUser)
         {
             return await DeleteAsync(applicationUser);
         }
@@ -47,6 +42,9 @@ namespace BX.Data.Repositories
             return await ExistsAsync(applicationUser);
         }
 
-
+        public async Task<IEnumerable<ApplicationUser>> GetFilteredUsersAsync() 
+        {
+            return await ReadAsync();
+        }
     }
 }

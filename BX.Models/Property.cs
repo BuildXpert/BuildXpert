@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace BX.Models
@@ -54,5 +55,6 @@ namespace BX.Models
 
         [Required(ErrorMessage = "Debe especificar si es en condominio.")]
         public bool IsCondominium { get; set; }  // ¿Es en condominio?
+        public virtual Project Project { get; set; }
     }
 }

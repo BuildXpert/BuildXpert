@@ -5,12 +5,12 @@ namespace BX.Models
     public interface IBuildXpertContext
     {
         DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<ProjectState> ProjectStates { get; set; }
-        public DbSet<ProjectTask> Tasks { get; set; }
-        public DbSet<Property> Properties { get; set; }
-        public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<SupplierPayment> SupplierPayments { get; set; }
-        public DbSet<SupplierOrder> SupplierOrders { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<ProjectStatus> ProjectStatus { get; set; }
+        public DbSet<ProjectTask> ProjectTask { get; set; }
+        public DbSet<Property> Property { get; set; }
+        public DbSet<Supplier> Supplier { get; set; }
+        public DbSet<SupplierPayment> SupplierPayment { get; set; }
+        public DbSet<SupplierOrder> SupplierOrder { get; set; }
     }
 }

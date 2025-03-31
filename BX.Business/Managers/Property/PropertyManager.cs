@@ -13,16 +13,26 @@ namespace BX.Business.Managers
     {
         #region DEPENDENCY INJECTION
         private readonly IPropertyRepository _propertyRepository;
-        public PropertyManager(IPropertyRepository propertyRepository)
+        private readonly IProjectRepository _projectRepository;
+        public PropertyManager(IPropertyRepository propertyRepository, IProjectRepository projectRepository)
         {
             _propertyRepository = propertyRepository;
+            _projectRepository = projectRepository;
         }
         #endregion
 
         #region GET
         public async Task<IEnumerable<Property>> GetPropertiesAsync()
         {
-            return await _propertyRepository.GetPropertiesAsync();
+            var properties = await _propertyRepository.GetPropertiesAsync();
+            //if (properties == null) {
+            //    return null;
+            //}
+            //foreach (var property in properties)
+            //{
+            //    await ProcessVirtualReferences(property);
+            //}
+            return properties;
         }
 
         public async Task<Property> GetPropertyByIdAsync(int id)
@@ -86,6 +96,12 @@ namespace BX.Business.Managers
             existingProperty.HasGarage = property.HasGarage;
             existingProperty.GarageCapacity = property.GarageCapacity;
             existingProperty.IsCondominium = property.IsCondominium;
+        }
+
+        private async Task ProcessVirtualReferences(Property property)
+        {
+            property.Project = await _projectRepository.GetProjectByPropertyId(property.Id);
+            property.Project.Property = null;
         }
         #endregion
     }

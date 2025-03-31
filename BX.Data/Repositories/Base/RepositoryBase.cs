@@ -6,7 +6,7 @@ namespace BX.Data;
 /// Base class for repository operations.
 /// </summary>
 /// <typeparam name="T">Entity type.</typeparam>
-public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+public class RepositoryBase<T,TKey> : IRepositoryBase<T,TKey> where T : class
 {
     private readonly BuildXpertContext _context;
     protected BuildXpertContext DbContext => _context;
@@ -36,6 +36,17 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
             throw new PAWException(ex);
         }
     }
+    //public async Task<int> CreateReturnIdAsync(T entity)    {
+    //    try
+    //    {
+    //        await _context.AddAsync(entity);
+    //        return await SaveAsync();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw new PAWException(ex);
+    //    }
+    //}
 
     /// <summary>
     /// Updates an existing entity of type T asynchronously.
@@ -147,7 +158,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
         return result > 0;
     }
 
-    public async Task<T> ReadOneAsync(int id)
+    public async Task<T> ReadOneAsync(TKey id)
     {
         try
         {

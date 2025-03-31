@@ -15,16 +15,16 @@ namespace BX.Models
 
         public bool IsCompleted { get; set; } = false;
 
-        [ForeignKey("Project")]
         public int ProjectId { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.Now; 
 
         [MaxLength(500)]
-        public string Description { get; set; } 
+        public string Description { get; set; }
 
 
+        [ForeignKey("ProjectId")]
         public virtual Project Project { get; set; }
     }
 }

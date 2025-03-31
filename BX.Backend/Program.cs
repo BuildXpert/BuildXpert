@@ -19,8 +19,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAuthService, UserService>();
+
+#region Managers
 builder.Services.AddScoped<IPropertyManager, PropertyManager>();
+builder.Services.AddScoped<IProjectManager, ProjectManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
+#endregion
+
+#region Repositories
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+#endregion
+
 #endregion
 
 

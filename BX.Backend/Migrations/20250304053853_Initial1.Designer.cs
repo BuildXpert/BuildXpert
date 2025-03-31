@@ -185,7 +185,7 @@ namespace BX.Backend.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("BX.Models.ProjectState", b =>
+            modelBuilder.Entity("BX.Models.ProjectStatus", b =>
                 {
                     b.Property<string>("ProjectStateId")
                         .HasColumnType("nvarchar(450)");
@@ -548,7 +548,7 @@ namespace BX.Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BX.Models.ProjectState", null)
+                    b.HasOne("BX.Models.ProjectStatus", null)
                         .WithMany("Projects")
                         .HasForeignKey("ProjectStateId");
 
@@ -653,7 +653,7 @@ namespace BX.Backend.Migrations
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("BX.Models.ProjectState", b =>
+            modelBuilder.Entity("BX.Models.ProjectStatus", b =>
                 {
                     b.Navigation("Projects");
                 });
