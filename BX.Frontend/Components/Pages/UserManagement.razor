@@ -50,7 +50,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var user in filteredUsers)
+                                    @foreach (var user in filteredUsers.Skip((currentPage - 1) * pageSize).Take(pageSize))
                                     {
                                         <tr>
                                             <td>@user.Email</td>
@@ -73,6 +73,38 @@
                                     }
                                 </tbody>
                             </table>
+                            @if (filteredUsers.Count > pageSize)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div>
+                                        <span class="text-muted">
+                                            Mostrando @((currentPage - 1) * pageSize + 1) a
+                                            @Math.Min(currentPage * pageSize, filteredUsers.Count) de
+                                            @filteredUsers.Count usuarios
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination">
+                                                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                                    <button class="page-link" @onclick="() => ChangePage(currentPage - 1)">Anterior</button>
+                                                </li>
+
+                                                @for (int i = 1; i <= (filteredUsers.Count + pageSize - 1) / pageSize; i++)
+                                                {
+                                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                                        <button class="page-link" @onclick="() => ChangePage(i)">@i</button>
+                                                    </li>
+                                                }
+
+                                                <li class="page-item @(currentPage * pageSize >= filteredUsers.Count ? "disabled" : "")">
+                                                    <button class="page-link" @onclick="() => ChangePage(currentPage + 1)">Siguiente</button>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     }
                 </div>
@@ -87,6 +119,8 @@
     private Dictionary<string, string> userRoles = new();
     private List<string>? availableRoles;
     private string searchTerm = "";
+    private int currentPage = 1;
+    private const int pageSize = 8;
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,6 +142,7 @@
 
     private void SearchUsers()
     {
+        currentPage = 1; // Resetear a la primera página al buscar
         if (string.IsNullOrWhiteSpace(searchTerm))
         {
             filteredUsers = users;
@@ -123,8 +158,14 @@
 
     private void ResetSearch()
     {
+        currentPage = 1; // Resetear a la primera página al restablecer
         searchTerm = "";
         filteredUsers = users;
+    }
+
+    private void ChangePage(int page)
+    {
+        currentPage = page;
     }
 
     private async Task OnRoleChange(ChangeEventArgs e, string userId)
@@ -152,6 +193,7 @@
             users = await UserService.GetUsersAsync();
             filteredUsers = users;
             await LoadUserRoles();
+            StateHasChanged();
         }
         else
         {

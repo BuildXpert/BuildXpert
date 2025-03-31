@@ -103,10 +103,10 @@
                 // Redirigir según el rol del usuario
                 string redirectUrl = role switch
                 {
-                    "Cliente" => "/dashboard-cliente",
+                    "Cliente" => "/dashboard-client",
                     "MOBS" => "/dashboard-mob",
                     "Admin" => "/dashboard-admin",
-                    "Bancario" => "/dashboard-bancario",
+                    "Bancario" => "/dashboard-bank",
                     _ => "/"
                 };
 
