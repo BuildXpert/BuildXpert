@@ -19,8 +19,8 @@ namespace BX.Models
         [Required]
         public string? ProjectStatusId { get; set; } // Puede ser: Entregado, Construccion, Venta, Remodelacion
         public int PropertyId { get; set; }
-        public string? ClientId { get; set; }
-        public string? AdminId { get; set; }
+        public string ClientId { get; set; }
+        public string AdminId { get; set; }
         #endregion
 
         #region Navigation attributes

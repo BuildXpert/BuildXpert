@@ -15,10 +15,14 @@ namespace BX.Business.Managers
         #region DEPENDENCY INJECTION
         private readonly IProjectRepository _projectRepository;
         private readonly IPropertyRepository _propertyRepository;
-        public ProjectManager(IProjectRepository projectRepository, IPropertyRepository propertyRepository)
+        private readonly IUserRepository _userRepository;
+        public ProjectManager(IProjectRepository projectRepository, 
+            IPropertyRepository propertyRepository, 
+            IUserRepository userRepository)
         {
             _projectRepository = projectRepository;
             _propertyRepository = propertyRepository;
+            _userRepository = userRepository;
         }
         #endregion
 
@@ -114,6 +118,13 @@ namespace BX.Business.Managers
         private async Task ProcessVirtualReferences(Project project)
         {
             project.Property = await _propertyRepository.GetPropertyByIdAsync(project.PropertyId);
+            project.Property.Project = null;
+            project.Admin = await _userRepository.GetUserByIdAsync(project.AdminId);
+            project.Admin.Projects = null;
+            project.Admin.ProjectsAsAdmin = null;
+            project.Client = await _userRepository.GetUserByIdAsync(project.ClientId);
+            project.Client.Projects= null;
+            project.Client.ProjectsAsAdmin = null;
         }
         #endregion
     }

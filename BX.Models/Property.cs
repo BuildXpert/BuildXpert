@@ -55,7 +55,6 @@ namespace BX.Models
 
         [Required(ErrorMessage = "Debe especificar si es en condominio.")]
         public bool IsCondominium { get; set; }  // ¿Es en condominio?
-        [JsonIgnore]
         public virtual Project Project { get; set; }
     }
 }

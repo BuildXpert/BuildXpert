@@ -5,7 +5,7 @@ namespace BX.Data
     /// Interface for basic repository operations.
     /// </summary>
     /// <typeparam name="T">The type of entity.</typeparam>
-    public interface IRepositoryBase<T>
+    public interface IRepositoryBase<T,TKey>
     {
         /// <summary>
         /// Creates a new entity asynchronously.
@@ -49,5 +49,7 @@ namespace BX.Data
         Task<bool> BExistsAsync(T entity);
 
         IQueryable<T> ReadQueriableAsync();
+
+        Task<T> ReadOneAsync(TKey id);
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BX.Data.Repositories
 {
-    public class PropertyRepository : RepositoryBase<Property>, IPropertyRepository
+    public class PropertyRepository : RepositoryBase<Property,int>, IPropertyRepository
     {
         public PropertyRepository(BuildXpertContext context) : base(context)
         {

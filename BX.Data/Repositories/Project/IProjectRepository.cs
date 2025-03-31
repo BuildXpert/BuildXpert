@@ -12,5 +12,6 @@ namespace BX.Data.Repositories
         Task<IEnumerable<Project>> GetProjectsAsync();
         Task<bool> UpdateProjectAsync(Project project);
         Task<IEnumerable<Project>> GetFilteredProjectsAsync(string searchText, string status);
+        Task<Project> GetProjectByPropertyId(int projectId);
     }
 }

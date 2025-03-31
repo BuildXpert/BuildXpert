@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BX.Data.Repositories
 {
-    public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
+    public class ProjectRepository : RepositoryBase<Project,int>, IProjectRepository
     {
         public ProjectRepository(BuildXpertContext context) : base(context)
         {
@@ -63,5 +63,16 @@ namespace BX.Data.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<Project> GetProjectByPropertyId(int projectId)
+        {
+            IQueryable<Project> queryableProject = ReadQueriableAsync();
+            queryableProject = queryableProject.Where(p => p.PropertyId == projectId);
+            var result = await queryableProject.ToListAsync();
+            if (result.Count > 0)
+            {
+                return result[0];
+            }
+            return null;
+        }
     }
 }

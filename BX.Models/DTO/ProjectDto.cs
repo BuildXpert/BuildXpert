@@ -80,8 +80,8 @@ namespace BX.Models.DTO
 
                 ProjectStatusId = this.ProjectStatusId,
                 PropertyId = this.PropertyId ?? 0,
-                ClientId = this.ClientId,
-                AdminId = this.AdminId
+                ClientId = this.ClientId ?? new Guid().ToString(),
+                AdminId = this.AdminId ?? new Guid().ToString()
             };
             return project;
         }
