@@ -1,40 +1,48 @@
-﻿@page "/dashboard-cliente"
+﻿@page "/dashboard-client"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Cliente")]
 @using BX.Frontend.Services
 @using BX.Models
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 
-@* @inject ProjectService ProjectService *@
+@inject ProjectService ProjectService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Dashboard Cliente</PageTitle>
 
-<h2 class="text-center">Bienvenido Cliente</h2>
+<h2 class="text-center pt-5 mb-5">Bienvenido Cliente</h2>
 
 @if (Projects == null)
 {
-    <p>Cargando...</p>
+    <p class="text-center">Cargando...</p>
 }
 else if (!Projects.Any())
 {
-    <p>No tienes proyectos asignados.</p>
+    <p class="text-center">No tienes proyectos asignados.</p>
 }
 else
 {
     <div class="container">
-        <div class="row">
+        <div class="row gy-4">
             @foreach (var project in Projects)
             {
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
                         <div class="card-body">
-                            <h5 class="card-title">@project.Name</h5>
+                            <h5 class="card-title">🏗️ @project.Name</h5>
                             <p class="card-text">@project.Description</p>
                             <p><strong>Estado:</strong> @project.Status</p>
-                            <button class="btn btn-primary" @onclick="() => ViewProject(project.Id)">Ver Proyecto</button>
+
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                <button class="btn btn-primary" @onclick="() => ViewProject(project.Id)">
+                                    Ver Proyecto
+                                </button>
+                                <button class="btn btn-outline-success" @onclick="() => ViewExpenses(project.Id)">
+                                    Reporte de Gastos
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,14 +65,19 @@ else
             CurrentUser = await UserManager.GetUserAsync(user);
             if (CurrentUser != null)
             {
-                // Projects = await ProjectService.GetProjectsAsync();
+                Projects = await ProjectService.GetProjectsAsync();
                 Projects = Projects.Where(p => p.ClientId == CurrentUser.Id).ToList();
             }
         }
     }
-    
+
     private void ViewProject(int id)
     {
         Navigation.NavigateTo($"/project-details/{id}");
+    }
+
+    private void ViewExpenses(int id)
+    {
+        Navigation.NavigateTo($"/estado-gastos/{id}");
     }
 }

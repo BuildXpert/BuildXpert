@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
-@inject NavigationManager NavigationManager
+@inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Confirm email</PageTitle>
@@ -32,13 +32,17 @@
             RedirectManager.RedirectTo("");
         }
 
-        var httpClient = new HttpClient();
-        var response = await httpClient.GetAsync($"https://localhost:7164/AuthUser/ConfirmEmail?userId={UserId}&code={Code}");
-        var result = await response.Content.ReadAsStringAsync();
-
-        statusMessage = response.IsSuccessStatusCode ? result : result; //Ok response (success message) : Bad response (failure message)
-
-        await Task.Delay(5000);
-        NavigationManager.NavigateTo("/Account/Login");
+        var user = await UserManager.FindByIdAsync(UserId);
+        if (user is null)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            statusMessage = $"Error loading user with ID {UserId}";
+        }
+        else
+        {
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
+            var result = await UserManager.ConfirmEmailAsync(user, code);
+            statusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+        }
     }
 }

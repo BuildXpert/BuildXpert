@@ -1,7 +1,7 @@
 ﻿@page "/edit-project/{id:int}"
 @using BX.Models
 @using BX.Frontend.Services
-@* @inject ProjectService ProjectService *@
+@inject ProjectService ProjectService
 @inject NavigationManager Navigation
 
 <div class="container mt-4">
@@ -69,12 +69,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // project = await ProjectService.GetProjectByIdAsync(Id);
+        project = await ProjectService.GetProjectByIdAsync(Id);
     }
 
     private async Task SaveChanges()
     {
-        // await ProjectService.UpdateProjectAsync(project);
+        await ProjectService.UpdateProjectAsync(project);
         Navigation.NavigateTo($"/project-details/{Id}");
     }
 
