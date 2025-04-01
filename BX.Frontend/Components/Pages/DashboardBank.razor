@@ -1,0 +1,67 @@
+﻿@page "/dashboard-bank"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Bancario")]
+<PageTitle>Dashboard Bancario</PageTitle>
+
+<h2 class="text-center pt-5 mb-5">Bienvenido Bancario</h2>
+
+<div class="container">
+    <!-- Sección: Créditos -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <h4>📄 Gestión de Créditos</h4>
+            <p>Puedes aprobar o rechazar solicitudes de financiamiento.</p>
+            <button class="btn btn-success">Ver Solicitudes</button>
+        </div>
+    </div>
+
+    <!-- Sección: Tabla de Clientes y Proyectos -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4>💰 Estado de Proyectos por Cliente</h4>
+
+            <!-- 🔍 Buscador (placeholder) -->
+            <div class="input-group mb-3 mt-3">
+                <input type="text" class="form-control" placeholder="Buscar cliente por nombre...">
+                <button class="btn btn-outline-secondary" type="button">Buscar</button>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>👤 Cliente</th>
+                            <th>🏗️ Proyecto</th>
+                            <th>💰 Total Gastado</th>
+                            <th>📊 Estado del Proyecto</th>
+                            <th>🔎 Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Carlos Ramírez</td>
+                            <td>Casa en Escazú</td>
+                            <td>₡12,500,000</td>
+                            <td>En ejecución</td>
+                            <td><button class="btn btn-outline-primary btn-sm">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td>María López</td>
+                            <td>Remodelación Santa Ana</td>
+                            <td>₡8,200,000</td>
+                            <td>Finalizado</td>
+                            <td><button class="btn btn-outline-primary btn-sm">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td>Juan Pérez</td>
+                            <td>Condominio Belén</td>
+                            <td>₡15,750,000</td>
+                            <td>En planificación</td>
+                            <td><button class="btn btn-outline-primary btn-sm">Ver Detalle</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

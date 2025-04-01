@@ -2,11 +2,11 @@
 @using Microsoft.AspNetCore.Identity
 @using BX.Models
 @using BX.Frontend.Services
-@* @inject ProjectService ProjectService *@
+@inject ProjectService ProjectService
 @inject NavigationManager Navigation
 
 <style>
-    /* Eliminar márgenes y paddings por defecto */
+    /* Eliminar márgenes y paddings por defecto */
     body, html {
         margin: 0;
         padding: 0;
@@ -76,7 +76,7 @@
 </style>
 
 <div class="carousel-container">
-    <!-- Carrusel de imágenes -->
+    <!-- Carrusel de imágenes -->
     <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             @for (int i = 0; i < carouselImages.Count; i++)
@@ -96,7 +96,7 @@
         </button>
     </div>
 
-    <!-- Texto y botón superpuestos -->
+    <!-- Texto y botón superpuestos -->
     <div class="carousel-overlay">
         <h1>Bienvenido a Grupo DCI</h1>
         <button class="btn btn-primary btn-lg" @onclick="GoToProperties">Ver mas</button>
@@ -104,7 +104,7 @@
 </div>
 
 <div class="container mt-5">
-    <!-- Filtros de búsqueda -->
+    <!-- Filtros de búsqueda -->
     <div class="row mb-4">
         <div class="col-md-6">
             <input type="text" class="form-control" placeholder="Buscar por nombre..." @bind="searchText">
@@ -113,8 +113,8 @@
             <select class="form-control" @bind="selectedStatus">
                 <option value="">Todos los estados</option>
                 <option value="Venta">Venta</option>
-                <option value="Construcción">Construcción</option>
-                <option value="Remodelación">Remodelación</option>
+                <option value="Construcción">Construcción</option>
+                <option value="Remodelación">Remodelación</option>
                 <option value="Entregado">Entregado</option>
             </select>
         </div>
@@ -145,16 +145,38 @@
                 <div class="col-md-4 mb-4">
                     <div class="card property-card">
                         <img src="@GetPropertyImage()" class="card-img-top" alt="Imagen de propiedad">
+
                         <div class="property-card-body">
-                            <h5 class="card-title">@property.Name</h5>
-                            <p class="text-muted">@property.Province, @property.Canton</p>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h5 class="card-title m-0" style="flex: 1;">
+                                    @(property.Name.Length > 16 ? property.Name[..16] + ".." : property.Name)
+                                </h5>
+                                <p class="m-0" style="margin-left: 1rem;">
+                                    <strong>🏷 Estado:</strong> <span class="badge bg-info">@property.Status</span>
+                                </p>
+                            </div>
+
+                            <p class="text-muted mt-2 mb-2" style="font-weight: bold;">
+                                📍 @property.Province, @property.Canton
+                            </p>
+
                             <p><strong>💰 Precio:</strong> <span class="badge bg-success badge-custom">@($"{property.Price:C}")</span></p>
-                            <p><strong>📏 Área:</strong> @(property.ConstructionSize + property.LandSize) m²</p>
-                            <p><strong>🏠 Tipo:</strong> @property.ConstructionType</p>
-                            <p><strong>Estado:</strong> <span class="badge bg-info">@property.Status</span></p>
-                            <button class="btn btn-outline-primary w-100 mt-2" @onclick="() => GoToPropertyDetails(property.Id)">Ver Detalles</button>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <p class="m-0"><strong>📏 Área:</strong> @(property.ConstructionSize + property.LandSize) m²</p>
+                                <p class="m-0"><strong>🏠 Tipo:</strong> @property.ConstructionType</p>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                                <p class="m-0"><strong>🚿 Baños:</strong> @property.Bathrooms</p>
+                                <p class="m-0"><strong>🛏 Habitaciones:</strong> @property.Bedrooms</p>
+                            </div>
+
+                            <button class="btn btn-outline-primary w-100 mt-3" @onclick="() => GoToPropertyDetails(property.Id)">Ver Detalles</button>
                         </div>
                     </div>
+
                 </div>
             }
         </div>
@@ -176,7 +198,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // properties = await ProjectService.GetProjectsAsync();
+        properties = await ProjectService.GetProjectsAsync();
     }
 
     private void ApplyFilters()

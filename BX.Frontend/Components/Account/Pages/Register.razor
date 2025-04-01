@@ -3,13 +3,15 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
-@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using BX.Models
-@using System.Text.Json
 
-@inject IEmailSender<ApplicationUser> EmailSender;
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
@@ -83,7 +85,7 @@
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
-    private RegisterUserModel Input { get; set; } = new();
+    private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
@@ -92,59 +94,100 @@
 
     public async Task RegisterUser(EditContext editContext)
     {
-        var httpclient = new HttpClient();
-        var response = await httpclient.PostAsJsonAsync("https://localhost:7164/AuthUser/Register", Input);
+        var user = CreateUser();
 
-        if (response.IsSuccessStatusCode)
+        // Asignar el nombre completo como UserName en Identity
+        await UserStore.SetUserNameAsync(user, Input.FullName, CancellationToken.None);
+
+        var emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+        // Guardar Nombre y Teléfono en Identity
+        user.PhoneNumber = Input.PhoneNumber;
+
+        var result = await UserManager.CreateAsync(user, Input.Password);
+
+        if (!result.Succeeded)
         {
-
-            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
-
-            if (result != null && result.TryGetValue("callbackUrl", out var redirectedURL))
-            {
-
-                var userJson = JsonSerializer.Serialize(result["user"]);
-                var user = JsonSerializer.Deserialize<ApplicationUser>(userJson);
-                var callbackUrl = redirectedURL.ToString();
-                if (user != null && callbackUrl != null)
-                {
-                    await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-                    RedirectManager.RedirectTo(callbackUrl);
-                }
-            }
-        }
-        else
-        {
-            var errorResult = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>();
-            if (errorResult != null)
-            {
-                if (errorResult.TryGetValue("identityErrors", out var errorsElement) && errorsElement.ValueKind == JsonValueKind.Array)
-                {
-                    identityErrors = errorsElement.EnumerateArray()
-                        .Select(e => new IdentityError
-                            {
-                                Code = e.GetProperty("code").GetString() ?? "Unknown",
-                                Description = e.GetProperty("description").GetString() ?? "Error desconocido"
-                            }).ToList();
-                }
-                else if (errorResult.TryGetValue("confirmationURL", out var confirmationUrlElement))
-                {
-                    // Si el servidor responde con una URL de confirmación en un error, redirigir al usuario
-                    var confirmationUrl = confirmationUrlElement.GetString();
-                    if (!string.IsNullOrEmpty(confirmationUrl))
-                    {
-                        NavigationManager.NavigateTo(confirmationUrl);
-                    }
-                }
-                else
-                {
-                    identityErrors = new List<IdentityError>
-                {
-                    new IdentityError { Code = "GeneralError", Description = "Ocurrió un error inesperado." }
-                };
-                }
-            }
+            identityErrors = result.Errors;
+            return;
         }
 
+        Logger.LogInformation("Usuario registrado correctamente.");
+
+        // 🔥 ASIGNAR ROL "Cliente" AUTOMÁTICAMENTE 🔥
+        if (!await UserManager.IsInRoleAsync(user, "Cliente"))
+        {
+            await UserManager.AddToRoleAsync(user, "Cliente");
+        }
+
+        // Confirmación de email
+        var userId = await UserManager.GetUserIdAsync(user);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+
+        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            RedirectManager.RedirectTo(
+                "Account/RegisterConfirmation",
+                new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
+        }
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
+    }
+
+    private ApplicationUser CreateUser()
+    {
+        try
+        {
+            return new ApplicationUser();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"No se pudo crear una instancia de '{nameof(ApplicationUser)}'.");
+        }
+    }
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("El sistema requiere un UserStore que soporte emails.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Nombre Completo")]
+        public string FullName { get; set; } = "";
+
+        [Required]
+        [Phone]
+        [Display(Name = "Teléfono")]
+        public string PhoneNumber { get; set; } = "";
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [StringLength(100, ErrorMessage = "La contraseña debe tener entre {2} y {1} caracteres.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Contraseña")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirmar contraseña")]
+        [Compare("Password", ErrorMessage = "Las contraseñas no coinciden.")]
+        public string ConfirmPassword { get; set; } = "";
     }
 }
