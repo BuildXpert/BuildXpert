@@ -18,7 +18,7 @@ namespace BX.Frontend.Services
 
         public async Task<List<Project>> GetProjectsAsync()
         {
-            return await _context.Projects
+            return await _context.Project
                 .Include(p => p.Tasks)
                 .Include(p => p.Client)
                 .Include(p => p.Admin)
@@ -41,7 +41,7 @@ namespace BX.Frontend.Services
             project.AdminId = adminId;
             project.Admin = admin;
 
-            await _context.Projects.AddAsync(project);
+            await _context.Project.AddAsync(project);
             await _context.SaveChangesAsync();
         }
 
@@ -50,33 +50,33 @@ namespace BX.Frontend.Services
             if (project == null)
                 throw new ArgumentException("El proyecto no puede ser nulo.");
 
-            _context.Projects.Update(project);
+            _context.Project.Update(project);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateProjectStatusAsync(int id, string status)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _context.Project.FindAsync(id);
             if (project != null)
             {
-                project.Status = status;
+                project.ProjectStatusId = status;
                 await _context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteProjectAsync(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _context.Project.FindAsync(id);
             if (project != null)
             {
-                _context.Projects.Remove(project);
+                _context.Project.Remove(project);
                 await _context.SaveChangesAsync();
             }
         }
 
         public async Task AddTaskToProjectAsync(int projectId, ProjectTask task)
         {
-            var project = await _context.Projects
+            var project = await _context.Project
                 .Include(p => p.Tasks)
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -84,7 +84,7 @@ namespace BX.Frontend.Services
             {
                 task.ProjectId = projectId;
                 task.CreatedAt = DateTime.UtcNow;
-                await _context.Tasks.AddAsync(task);
+                await _context.ProjectTask.AddAsync(task);
                 await _context.SaveChangesAsync();
             }
         }
@@ -92,7 +92,7 @@ namespace BX.Frontend.Services
 
         public async Task ToggleTaskCompletionAsync(int taskId)
         {
-            var task = await _context.Tasks.FindAsync(taskId);
+            var task = await _context.ProjectTask.FindAsync(taskId);
             if (task != null)
             {
                 task.IsCompleted = !task.IsCompleted;
@@ -102,17 +102,17 @@ namespace BX.Frontend.Services
 
         public async Task DeleteTaskAsync(int taskId)
         {
-            var task = await _context.Tasks.FindAsync(taskId);
+            var task = await _context.ProjectTask.FindAsync(taskId);
             if (task != null)
             {
-                _context.Tasks.Remove(task);
+                _context.ProjectTask.Remove(task);
                 await _context.SaveChangesAsync();
             }
         }
 
         public async Task<Project> GetProjectByIdAsync(int id)
         {
-            return await _context.Projects
+            return await _context.Project
                 .Include(p => p.Tasks)
                 .Include(p => p.Client)
                 .Include(p => p.Admin)
@@ -121,88 +121,88 @@ namespace BX.Frontend.Services
 
         public async Task<ProjectTask> GetTaskByIdAsync(int id)
         {
-            return await _context.Tasks
+            return await _context.ProjectTask
                 .Include(t => t.Project)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<List<ProjectTask>> GetTasksByProjectIdAsync(int projectId)
         {
-            return await _context.Tasks
+            return await _context.ProjectTask
                 .Where(t => t.ProjectId == projectId)
                 .OrderByDescending(t => t.CreatedAt) 
                 .ToListAsync();
         }
 
 
-        public async Task<List<Project>> GetFilteredProjectsAsync(
-        string searchText = "",
-        string constructionType = "",
-        string status = "",
-        string province = "",
-        string canton = "",
-        int? minPrice = null,
-        int? maxPrice = null,
-        int? bedrooms = null,
-        int? bathrooms = null)
-        {
-            var query = _context.Projects.AsQueryable();
+        //public async Task<List<Project>> GetFilteredProjectsAsync(
+        //    string searchText = "",
+        //    string constructionType = "",
+        //    string status = "",
+        //    string province = "",
+        //    string canton = "",
+        //    int? minPrice = null,
+        //    int? maxPrice = null,
+        //    int? bedrooms = null,
+        //    int? bathrooms = null)
+        //{
+        //    var query = _context.Project.AsQueryable();
 
-            // Filtro por texto (Nombre o Descripción)
-            if (!string.IsNullOrEmpty(searchText))
-            {
-                query = query.Where(p => p.Name.Contains(searchText) || p.Description.Contains(searchText));
-            }
+        //    // Filtro por texto (Nombre o Descripción)
+        //    if (!string.IsNullOrEmpty(searchText))
+        //    {
+        //        query = query.Where(p => p.Name.Contains(searchText) || p.Description.Contains(searchText));
+        //    }
 
-            // Filtro por Tipo de Construcción
-            if (!string.IsNullOrEmpty(constructionType))
-            {
-                query = query.Where(p => p.ConstructionType == constructionType);
-            }
+        //    // Filtro por Tipo de Construcción
+        //    if (!string.IsNullOrEmpty(constructionType))
+        //    {
+        //        query = query.Where(p => p.ConstructionType == constructionType);
+        //    }
 
-            // Filtro por Estado del Proyecto
-            if (!string.IsNullOrEmpty(status))
-            {
-                query = query.Where(p => p.Status == status);
-            }
+        //    // Filtro por Estado del Proyecto
+        //    if (!string.IsNullOrEmpty(status))
+        //    {
+        //        query = query.Where(p => p.Status == status);
+        //    }
 
-            // Filtro por Provincia
-            if (!string.IsNullOrEmpty(province))
-            {
-                query = query.Where(p => p.Province == province);
-            }
+        //    // Filtro por Provincia
+        //    if (!string.IsNullOrEmpty(province))
+        //    {
+        //        query = query.Where(p => p.Province == province);
+        //    }
 
-            // Filtro por Cantón
-            if (!string.IsNullOrEmpty(canton))
-            {
-                query = query.Where(p => p.Canton == canton);
-            }
+        //    // Filtro por Cantón
+        //    if (!string.IsNullOrEmpty(canton))
+        //    {
+        //        query = query.Where(p => p.Canton == canton);
+        //    }
 
-            // Filtro por Rango de Precio
-            if (minPrice.HasValue)
-            {
-                query = query.Where(p => p.Price >= minPrice.Value);
-            }
+        //    // Filtro por Rango de Precio
+        //    if (minPrice.HasValue)
+        //    {
+        //        query = query.Where(p => p.Price >= minPrice.Value);
+        //    }
 
-            if (maxPrice.HasValue)
-            {
-                query = query.Where(p => p.Price <= maxPrice.Value);
-            }
+        //    if (maxPrice.HasValue)
+        //    {
+        //        query = query.Where(p => p.Price <= maxPrice.Value);
+        //    }
 
-            // Filtro por Número de Habitaciones
-            if (bedrooms.HasValue)
-            {
-                query = query.Where(p => p.Bedrooms == bedrooms.Value);
-            }
+        //    // Filtro por Número de Habitaciones
+        //    if (bedrooms.HasValue)
+        //    {
+        //        query = query.Where(p => p.Bedrooms == bedrooms.Value);
+        //    }
 
-            // Filtro por Número de Baños
-            if (bathrooms.HasValue)
-            {
-                query = query.Where(p => p.Bathrooms == bathrooms.Value);
-            }
+        //    // Filtro por Número de Baños
+        //    if (bathrooms.HasValue)
+        //    {
+        //        query = query.Where(p => p.Bathrooms == bathrooms.Value);
+        //    }
 
-            return await query.ToListAsync();
-        }
+        //    return await query.ToListAsync();
+        //}
 
 
         public async Task UpdateTaskAsync(ProjectTask task)
@@ -210,7 +210,7 @@ namespace BX.Frontend.Services
             if (task == null)
                 throw new ArgumentException("La tarea no puede ser nula.");
 
-            var existingTask = await _context.Tasks.FindAsync(task.Id);
+            var existingTask = await _context.ProjectTask.FindAsync(task.Id);
             if (existingTask != null)
             {
                 existingTask.Title = task.Title;
@@ -224,7 +224,7 @@ namespace BX.Frontend.Services
 
         public async Task<List<Project>> GetFilteredProjectsAsync(string searchText, string status)
         {
-            var query = _context.Projects
+            var query = _context.Project
                 .Include(p => p.Tasks)
                 .Include(p => p.Client)
                 .Include(p => p.Admin)
@@ -237,32 +237,32 @@ namespace BX.Frontend.Services
 
             if (!string.IsNullOrEmpty(status))
             {
-                query = query.Where(p => p.Status == status);
+                query = query.Where(p => p.ProjectStatusId == status);
             }
 
             return await query.ToListAsync();
         }
 
-        public async Task UpdateProjectDetailsAsync(int id, string constructionType, string province, string canton, double constructionSize, double landSize, int bedrooms, int bathrooms, decimal price, int floors, bool hasGarage, int garageCapacity, bool isCondominium)
-        {
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
-            {
-                project.ConstructionType = constructionType;
-                project.Province = province;
-                project.Canton = canton;
-                project.ConstructionSize = constructionSize;
-                project.LandSize = landSize;
-                project.Bedrooms = bedrooms;
-                project.Bathrooms = bathrooms;
-                project.Price = price;
-                project.Floors = floors;
-                project.HasGarage = hasGarage;
-                project.GarageCapacity = garageCapacity;
-                project.IsCondominium = isCondominium;
+        //public async Task UpdateProjectDetailsAsync(int id, string constructionType, string province, string canton, double constructionSize, double landSize, int bedrooms, int bathrooms, decimal price, int floors, bool hasGarage, int garageCapacity, bool isCondominium)
+        //{
+        //    var project = await _context.Project.FindAsync(id);
+        //    if (project != null)
+        //    {
+        //        project.ConstructionType = constructionType;
+        //        project.Province = province;
+        //        project.Canton = canton;
+        //        project.ConstructionSize = constructionSize;
+        //        project.LandSize = landSize;
+        //        project.Bedrooms = bedrooms;
+        //        project.Bathrooms = bathrooms;
+        //        project.Price = price;
+        //        project.Floors = floors;
+        //        project.HasGarage = hasGarage;
+        //        project.GarageCapacity = garageCapacity;
+        //        project.IsCondominium = isCondominium;
 
-                await _context.SaveChangesAsync();
-            }
-        }
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
     }
 }

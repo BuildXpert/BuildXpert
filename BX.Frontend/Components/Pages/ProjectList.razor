@@ -100,12 +100,12 @@
                             <h5 class="card-text text-muted">@project.Description</h5>
                             <div>
                             </div>
-                            <p><strong>📍 Ubicación:</strong> @project.Province, @project.Canton</p>
-                            <p><strong>💰 Precio:</strong> @project.Price.ToString("C")</p>
-                            <p><strong>🏗 Tipo:</strong> @project.ConstructionType</p>
+                            <p><strong>📍 Ubicación:</strong> @project.Property.Province, @project.Property.Canton</p>
+                            <p><strong>💰 Precio:</strong> @project.Property.Price.ToString("C")</p>
+                            <p><strong>🏗 Tipo:</strong> @project.Property.ConstructionType</p>
                             <div style="display: flex; gap: 6.7rem;">
-                                <p><strong>🚿 Baños:</strong> @project.Bathrooms</p>
-                                <p><strong>🛏 Habitaciones:</strong> @project.Bedrooms</p>
+                                <p><strong>🚿 Baños:</strong> @project.Property.Bathrooms</p>
+                                <p><strong>🛏 Habitaciones:</strong> @project.Property.Bedrooms</p>
                             </div>
 
                             <div class="d-flex justify-content-between mt-3">
@@ -150,7 +150,7 @@
 
     private async Task FilterProjects()
     {
-        filteredProjects = await ProjectService.GetFilteredProjectsAsync(searchText, constructionType, status, province, canton, minPrice, maxPrice, bedrooms, bathrooms);
+        // filteredProjects = await ProjectService.GetFilteredProjectsAsync(searchText, constructionType, status, province, canton, minPrice, maxPrice, bedrooms, bathrooms);
     }
 
     private async Task ClearFilters()
@@ -166,4 +166,6 @@
         bathrooms = null;
         await FilterProjects();
     }
+
+
 }
