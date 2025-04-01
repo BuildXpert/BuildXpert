@@ -218,8 +218,8 @@
 @code {
     [Parameter] public int Id { get; set; }
     private bool showModal = false;
-    private Project editProperty = new Project();
-    private Project property;
+    private Property editProperty = new Property();
+    private Property property;
     private List<string> propertyImages = new()
     {
         "https://t4.ftcdn.net/jpg/03/20/87/47/360_F_320874769_eyM3wGufm3AgcWgXH1t5LxrOYppRfW4A.jpg",
@@ -249,9 +249,9 @@
         }
     }
 
-    private void ShowEditModal(Project property)
+    private void ShowEditModal(Property property)
     {
-        editProperty = new Project
+        editProperty = new Property
             {
                 Id = property.Id,
                 Name = property.Name,

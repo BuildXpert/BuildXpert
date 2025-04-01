@@ -18,7 +18,7 @@ namespace BX.Frontend.Services
 
         public async Task<List<Property>> GetPropertiesAsync()
         {
-            return await _context.Properties.ToListAsync() ?? new List<Property>();
+            return await _context.Property.ToListAsync() ?? new List<Property>();
         }
 
         public async Task AddPropertyAsync(Property property)
@@ -26,7 +26,7 @@ namespace BX.Frontend.Services
             if (property == null)
                 throw new ArgumentException("La propiedad no puede ser nula.");
 
-            await _context.Properties.AddAsync(property);
+            await _context.Property.AddAsync(property);
             await _context.SaveChangesAsync();
         }
 
@@ -35,13 +35,13 @@ namespace BX.Frontend.Services
             if (property == null)
                 throw new ArgumentException("La propiedad no puede ser nula.");
 
-            _context.Properties.Update(property);
+            _context.Property.Update(property);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdatePropertyStatusAsync(int id, string status)
         {
-            var property = await _context.Properties.FindAsync(id);
+            var property = await _context.Property.FindAsync(id);
             if (property != null)
             {
                 property.Status = status;
@@ -51,22 +51,22 @@ namespace BX.Frontend.Services
 
         public async Task DeletePropertyAsync(int id)
         {
-            var property = await _context.Properties.FindAsync(id);
+            var property = await _context.Property.FindAsync(id);
             if (property != null)
             {
-                _context.Properties.Remove(property);
+                _context.Property.Remove(property);
                 await _context.SaveChangesAsync();
             }
         }
 
         public async Task<Property> GetPropertyByIdAsync(int id)
         {
-            return await _context.Properties.FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Property.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<List<Property>> GetFilteredPropertiesAsync(string searchText, string status)
         {
-            var query = _context.Properties.AsQueryable();
+            var query = _context.Property.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchText))
             {
@@ -83,7 +83,7 @@ namespace BX.Frontend.Services
 
         public async Task UpdatePropertyDetailsAsync(int id, string constructionType, string province, string canton, double constructionSize, double landSize, int bedrooms, int bathrooms, decimal price, int floors, bool hasGarage, int garageCapacity, bool isCondominium)
         {
-            var property = await _context.Properties.FindAsync(id);
+            var property = await _context.Property.FindAsync(id);
             if (property != null)
             {
                 property.ConstructionType = constructionType;
