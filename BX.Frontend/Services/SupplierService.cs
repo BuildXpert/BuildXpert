@@ -19,7 +19,7 @@ namespace BX.Frontend.Services
         // 🔹 Obtener todos los supplieres
         public async Task<List<Supplier>> GetSupplierAsync()
         {
-            return await _context.Suppliers
+            return await _context.Supplier
                 .Include(p => p.Payments)
                 .Include(p => p.Orders)
                 .AsNoTracking() // Mejora el rendimiento al no rastrear las entidades
@@ -29,7 +29,7 @@ namespace BX.Frontend.Services
         // 🔹 Obtener un supplier por ID
         public async Task<Supplier> GetSupplierByIdAsync(int id)
         {
-            return await _context.Suppliers
+            return await _context.Supplier
                 .Include(p => p.Payments)
                 .Include(p => p.Orders)
                 .AsNoTracking() // Mejora el rendimiento al no rastrear las entidades
@@ -42,7 +42,7 @@ namespace BX.Frontend.Services
             if (supplier == null)
                 throw new ArgumentNullException(nameof(supplier), "El supplier no puede ser nulo.");
 
-            await _context.Suppliers.AddAsync(supplier);
+            await _context.Supplier.AddAsync(supplier);
             await _context.SaveChangesAsync();
         }
 
@@ -52,7 +52,7 @@ public async Task UpdatesupplierAsync(Supplier supplier)
     if (supplier == null)
         throw new ArgumentNullException(nameof(supplier), "El supplier no puede ser nulo.");
 
-    var existingsupplier = await _context.Suppliers.FindAsync(supplier.Id);
+    var existingsupplier = await _context.Supplier.FindAsync(supplier.Id);
     if (existingsupplier == null)
         throw new KeyNotFoundException("supplier no encontrado.");
 
@@ -70,18 +70,18 @@ public async Task UpdatesupplierAsync(Supplier supplier)
         // 🔹 Eliminar un supplier
         public async Task DeletesupplierAsync(int id)
         {
-            var supplier = await _context.Suppliers.FindAsync(id);
+            var supplier = await _context.Supplier.FindAsync(id);
             if (supplier == null)
                 throw new KeyNotFoundException("supplier no encontrado.");
 
-            _context.Suppliers.Remove(supplier);
+            _context.Supplier.Remove(supplier);
             await _context.SaveChangesAsync();
         }
 
         // 🔹 Obtener todos los pagos de un supplier
         public async Task<List<SupplierPayment>> GetPagosBysupplierIdAsync(int supplierId)
         {
-            return await _context.SupplierPayments
+            return await _context.SupplierPayment
                 .Where(p => p.SupplierId == supplierId)
                 .OrderByDescending(p => p.Date)
                 .AsNoTracking() // Mejora el rendimiento al no rastrear las entidades
@@ -94,14 +94,14 @@ public async Task UpdatesupplierAsync(Supplier supplier)
             if (pago == null)
                 throw new ArgumentNullException(nameof(pago), "El pago no puede ser nulo.");
 
-            _context.SupplierPayments.Add(pago);
+            _context.SupplierPayment.Add(pago);
             await _context.SaveChangesAsync();
         }
 
         // 🔹 Obtener todos los pedidos de un supplier
         public async Task<List<SupplierOrder>> GetPedidosBysupplierIdAsync(int supplierId)
         {
-            return await _context.SupplierOrders
+            return await _context.SupplierOrder
                 .Where(p => p.SupplierId == supplierId)
                 .AsNoTracking() // Mejora el rendimiento al no rastrear las entidades
                 .ToListAsync();
@@ -113,29 +113,29 @@ public async Task UpdatesupplierAsync(Supplier supplier)
             if (supplierOrders == null)
                 throw new ArgumentNullException(nameof(supplierOrders), "El pedido no puede ser nulo.");
 
-            _context.SupplierOrders.Add(supplierOrders);
+            _context.SupplierOrder.Add(supplierOrders);
             await _context.SaveChangesAsync();
         }
 
         // 🔹 Eliminar un pago
         public async Task DeleteSupplierPaymentsAsync(int id)
         {
-            var pago = await _context.SupplierPayments.FindAsync(id);
+            var pago = await _context.SupplierPayment.FindAsync(id);
             if (pago == null)
                 throw new KeyNotFoundException("Pago no encontrado.");
 
-            _context.SupplierPayments.Remove(pago);
+            _context.SupplierPayment.Remove(pago);
             await _context.SaveChangesAsync();
         }
 
         // 🔹 Eliminar un pedido
         public async Task DeleteSupplierOrdersAsync(int id)
         {
-            var pedido = await _context.SupplierOrders.FindAsync(id);
+            var pedido = await _context.SupplierOrder.FindAsync(id);
             if (pedido == null)
                 throw new KeyNotFoundException("Pedido no encontrado.");
 
-            _context.SupplierOrders.Remove(pedido);
+            _context.SupplierOrder.Remove(pedido);
             await _context.SaveChangesAsync();
         }
     }

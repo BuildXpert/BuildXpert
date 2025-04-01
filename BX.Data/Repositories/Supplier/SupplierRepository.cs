@@ -7,7 +7,7 @@ using BX.Models;
 
 namespace BX.Data.Repositories
 {
-    public class SupplierRepository : RepositoryBase<Supplier>, ISupplierRepository
+    public class SupplierRepository : RepositoryBase<Supplier,int>, ISupplierRepository
     {
         public SupplierRepository(BuildXpertContext context) : base(context)
         {
